@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --font-source-sans: 'Source Sans 3', sans-serif;
+  --font-merriweather: 'Merriweather', serif;
+}
+
+body {
+  font-family: var(--font-source-sans);
+}
+
+.font-serif {
+  font-family: var(--font-merriweather);
+}
