@@ -89,7 +89,7 @@ export default function AboutPage() {
                       50 Words, No More
                     </h4>
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Every article is condensed to exactly 50 words or the nearest complete sentence. Get the essence without the fluff.
+                      Every article is condensed to around 50 words. Get the essence without the fluff.
                     </p>
                   </div>
 
@@ -105,7 +105,7 @@ export default function AboutPage() {
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  We aggregate cryptocurrency news from three trusted sources: <strong>CoinDesk</strong>, <strong>The Block</strong>, and <strong>Reddit's r/CryptoCurrency</strong>.
+                  We aggregate cryptocurrency news from multiple trusted sources e.g.: <strong>CoinDesk</strong>, <strong>The Block</strong>, and <strong>Reddit's r/CryptoCurrency</strong>.
                   The feed updates automatically every 10 seconds, but articles are curated, not endless.
                 </p>
 
