@@ -2,6 +2,8 @@
 
 **Read. Inform. Move on.**
 
+**Live Demo: [https://minimal-news-ten.vercel.app/](https://minimal-news-ten.vercel.app/)**
+
 A focused crypto news reader designed for intentional news consumption. No endless scrolling, no engagement tricks—just the latest cryptocurrency news from trusted sources, condensed to 50 words per article.
 
 ## Philosophy
