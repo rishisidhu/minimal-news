@@ -6,6 +6,7 @@ import Link from 'next/link'
 import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import SourceFilter from '@/components/SourceFilter'
+import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -69,13 +70,16 @@ export default function Home() {
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 dark:from-black dark:via-gray-950 dark:to-gray-900 shadow-lg border-b border-gray-700 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="font-serif text-4xl font-semibold text-white">
-                Minimal News
-              </h1>
-              <p className="text-sm text-slate-200 mt-2">
-                Read. Inform. Move on.
-              </p>
+            <div className="flex items-center gap-3">
+              <Logo className="w-10 h-10" />
+              <div>
+                <h1 className="font-serif text-4xl font-semibold text-white">
+                  Minimal News
+                </h1>
+                <p className="text-sm text-slate-200 mt-1">
+                  Read. Inform. Move on.
+                </p>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
