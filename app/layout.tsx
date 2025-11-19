@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Sans_3, Merriweather } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { Analytics } from '@vercel/analytics/react';
 import "./globals.css";
 
 const sourceSans = Source_Sans_3({ subsets: ['latin'], variable: '--font-source-sans' });
@@ -26,6 +27,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

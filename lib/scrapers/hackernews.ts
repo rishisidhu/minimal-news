@@ -80,7 +80,7 @@ export async function scrapeHackerNews(): Promise<NewsArticle[]> {
         return {
           title: story.title,
           excerpt,
-          image_url: null,
+          image_url: null as string | null,
           source: 'Hacker News',
           article_url: articleUrl,
           published_at: new Date(story.time * 1000).toISOString(),
