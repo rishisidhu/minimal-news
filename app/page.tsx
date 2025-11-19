@@ -5,18 +5,21 @@ import useSWR from 'swr'
 import Link from 'next/link'
 import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import SourceFilter from '@/components/SourceFilter'
 import { NewsArticle } from '@/lib/supabase'
-import { formatDistanceToNow } from 'date-fns'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function Home() {
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
   const [isScrapingInitial, setIsScrapingInitial] = useState(true)
+  const [selectedSources, setSelectedSources] = useState<string[]>([
+    'CoinDesk', 'The Block', 'Reddit', 'Cointelegraph', 'CryptoPotato', 'Paradigm', 'a16z Crypto', 'Messari'
+  ])
 
   // Fetch news with auto-refresh every 10 seconds
   const { data, error, isLoading, mutate } = useSWR(
-    '/api/news?limit=50',
+    '/api/news',
     fetcher,
     {
       refreshInterval: 10000, // Refresh every 10 seconds
@@ -57,7 +60,8 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [mutate])
 
-  const articles: NewsArticle[] = data?.data || []
+  const allArticles: NewsArticle[] = data?.data || []
+  const articles = allArticles.filter(article => selectedSources.includes(article.source))
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -89,7 +93,10 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isScrapingInitial && articles.length === 0 ? (
+        {/* Source Filter */}
+        <SourceFilter onFilterChange={setSelectedSources} />
+
+        {isScrapingInitial && allArticles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
             <p className="text-slate-600 dark:text-slate-400">
@@ -129,7 +136,7 @@ export default function Home() {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Updates every 10 seconds • Sources: CoinDesk, The Block, Reddit r/CryptoCurrency
+            Updates every 10 seconds • 8 Sources • Max 3 articles per source
           </p>
         </div>
       </footer>

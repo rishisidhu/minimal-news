@@ -11,6 +11,18 @@
 
 ## ✅ COMPLETED TASKS
 
+### Session 11: Expand Sources, Per-Source Limit, Source Filter
+- [x] Created Cointelegraph scraper (RSS)
+- [x] Created CryptoPotato scraper (RSS)
+- [x] Created Paradigm scraper (HTML)
+- [x] Created a16z Crypto scraper (HTML)
+- [x] Created Messari scraper (HTML)
+- [x] Updated scrape route to call all 8 scrapers
+- [x] Added 3-per-source limit to news route
+- [x] Created SourceFilter component with toggle buttons
+- [x] Integrated filter into main page with localStorage persistence
+- [x] Added source badge colors for new sources
+
 ### Session 10: Rebrand, About Page, Deployment
 - [x] Renamed website to "Minimal News" (layout.tsx, page.tsx, README.md)
 - [x] Created About page with minimalist philosophy (app/about/page.tsx)
@@ -297,3 +309,52 @@ Minimal News is a focused crypto news reader that pulls cryptocurrency news from
 
 ### Result
 Minimal News is now live and fully branded with a clear minimalist philosophy. The UI is clean, navigation is intuitive, and the deployment pipeline is established for future updates.
+
+---
+
+## 📝 SESSION 11 REVIEW
+
+### Summary of Changes
+
+**Task 1: Added 5 New Scrapers**
+- `lib/scrapers/cointelegraph.ts` - RSS feed from cointelegraph.com/rss
+- `lib/scrapers/cryptopotato.ts` - RSS feed from cryptopotato.com/feed/
+- `lib/scrapers/paradigm.ts` - HTML scraper for paradigm.xyz/writing
+- `lib/scrapers/a16z.ts` - HTML scraper for a16zcrypto.com/posts
+- `lib/scrapers/messari.ts` - HTML scraper for messari.io/research
+
+**Task 2: Max 3 Articles Per Source**
+- Updated `app/api/news/route.ts` with per-source limiting logic
+- Groups articles by source, takes max 3 from each
+- Re-sorts combined results by time (newest first)
+- Configurable via `maxPerSource` query parameter
+
+**Task 3: Source Filter Toggle UI**
+- Created `components/SourceFilter.tsx`
+- Horizontal row of toggle buttons for each source
+- Saves preferences to localStorage
+- Allows users to hide sources they don't want
+
+### Files Created (6 files)
+1. `lib/scrapers/cointelegraph.ts` - Cointelegraph RSS scraper
+2. `lib/scrapers/cryptopotato.ts` - CryptoPotato RSS scraper
+3. `lib/scrapers/paradigm.ts` - Paradigm HTML scraper
+4. `lib/scrapers/a16z.ts` - a16z Crypto HTML scraper
+5. `lib/scrapers/messari.ts` - Messari HTML scraper
+6. `components/SourceFilter.tsx` - Source toggle filter component
+
+### Files Modified (4 files)
+1. `app/api/scrape/route.ts` - Added imports and calls for all 8 scrapers
+2. `app/api/news/route.ts` - Added 3-per-source limit logic
+3. `app/page.tsx` - Added SourceFilter component and filtering logic
+4. `components/NewsCard.tsx` - Added colors for 5 new sources
+
+### Technical Notes
+- RSS scrapers (Cointelegraph, CryptoPotato) follow same pattern as CoinDesk
+- HTML scrapers (Paradigm, a16z, Messari) use Cheerio to parse article listings
+- Source colors: Cointelegraph (yellow), CryptoPotato (green), Paradigm (purple), a16z (red), Messari (cyan)
+- Filter state persists in localStorage under key `selectedSources`
+- At least one source must remain selected (can't deselect all)
+
+### Result
+Minimal News now aggregates from 8 sources (up from 3), with balanced coverage (max 3 per source) and user-controlled filtering. The UI remains clean with color-coded source badges and persistent filter preferences.

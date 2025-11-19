@@ -18,8 +18,18 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         return 'bg-black dark:bg-gray-900'
       case 'Reddit':
         return 'bg-orange-600 dark:bg-orange-700'
+      case 'Cointelegraph':
+        return 'bg-yellow-600 dark:bg-yellow-700'
+      case 'CryptoPotato':
+        return 'bg-green-600 dark:bg-green-700'
+      case 'Paradigm':
+        return 'bg-purple-600 dark:bg-purple-700'
+      case 'a16z Crypto':
+        return 'bg-red-600 dark:bg-red-700'
+      case 'Messari':
+        return 'bg-cyan-600 dark:bg-cyan-700'
       default:
-        return 'bg-blue-600 dark:bg-blue-700'
+        return 'bg-slate-600 dark:bg-slate-700'
     }
   }
 
