@@ -11,8 +11,8 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "Minimal News",
-  description: "Crypto news, simplified. Read. Inform. Move on.",
+  title: "Niminal",
+  description: "News without the noise. Crypto and AI news, simplified.",
 };
 
 export default function RootLayout({

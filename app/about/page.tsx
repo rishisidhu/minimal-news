@@ -11,10 +11,10 @@ export default function AboutPage() {
             <Link href="/" className="inline-block">
               <div>
                 <h1 className="font-serif text-4xl font-semibold text-white hover:text-slate-200 transition-colors">
-                  Minimal News
+                  Niminal
                 </h1>
                 <p className="text-sm text-slate-200 mt-2">
-                  Read. Inform. Move on.
+                  News without the noise.
                 </p>
               </div>
             </Link>
@@ -39,10 +39,10 @@ export default function AboutPage() {
             {/* Slogan */}
             <div className="text-center pb-8 border-b border-slate-200 dark:border-slate-700">
               <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                Read. Inform. Move on.
+                News without the noise.
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 italic">
-                News without the noise
+                Read. Inform. Move on.
               </p>
             </div>
 
@@ -58,7 +58,7 @@ export default function AboutPage() {
                 </p>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <strong>Minimal News</strong> is designed around four core principles:
+                  <strong>Niminal</strong> is designed around four core principles:
                 </p>
 
                 {/* Four Principles */}
@@ -105,12 +105,12 @@ export default function AboutPage() {
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  We aggregate cryptocurrency news from multiple trusted sources e.g.: <strong>CoinDesk</strong>, <strong>The Block</strong>, and <strong>Reddit's r/CryptoCurrency</strong>.
-                  The feed updates automatically every 10 seconds, but articles are curated, not endless.
+                  We aggregate news from carefully vetted, high-quality sources in crypto and AI.
+                  The feed updates automatically, but articles are curated, not endless.
                 </p>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  This is news designed for humans, not algorithms. Welcome to Minimal News.
+                  This is news designed for humans, not algorithms. Welcome to Niminal.
                 </p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function AboutPage() {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Minimal News • Read. Inform. Move on.
+            Niminal • News without the noise.
           </p>
         </div>
       </footer>

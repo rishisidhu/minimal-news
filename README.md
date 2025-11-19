@@ -1,14 +1,14 @@
-# Minimal News
+# Niminal
 
-**Read. Inform. Move on.**
+**News without the noise.**
 
-**Live Demo: [https://minimal-news-ten.vercel.app/](https://minimal-news-ten.vercel.app/)**
+**Live Demo: [https://niminal.xyz](https://niminal.xyz)**
 
-A focused crypto news reader designed for intentional news consumption. No endless scrolling, no engagement tricks—just the latest cryptocurrency news from trusted sources, condensed to 50 words per article.
+A focused news reader for crypto and AI, designed for intentional news consumption. No endless scrolling, no engagement tricks—just the latest news from trusted sources, condensed to 50 words per article.
 
 ## Philosophy
 
-In a world of endless feeds and infinite scrolling, we believe news consumption should be intentional, focused, and finite. Minimal News is built around four core principles:
+In a world of endless feeds and infinite scrolling, we believe news consumption should be intentional, focused, and finite. Niminal is built around four core principles:
 
 - **No Endless Scroll**: A curated selection of articles, not an infinite feed
 - **Fresh Only**: Articles older than 6 hours are automatically removed

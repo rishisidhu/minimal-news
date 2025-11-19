@@ -5,29 +5,34 @@ import useSWR from 'swr'
 import Link from 'next/link'
 import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import SourceFilter from '@/components/SourceFilter'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-export default function Home() {
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
-  const [selectedSources, setSelectedSources] = useState<string[]>([
-    'CoinDesk', 'The Block', 'Reddit', 'Cointelegraph', 'CryptoPotato', 'Paradigm', 'a16z Crypto', 'Messari'
-  ])
+const AI_SOURCES = [
+  'OpenAI',
+  'MIT Tech Review',
+  'TechCrunch',
+  'Wired',
+  'VentureBeat',
+  'DeepMind',
+  'Meta AI',
+  'NVIDIA',
+  'Hugging Face',
+]
 
-  // Fetch news with auto-refresh every 10 seconds
-  const { data, error, isLoading, mutate } = useSWR(
-    '/api/news',
+export default function AINews() {
+  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
+  const [selectedSources, setSelectedSources] = useState<string[]>(AI_SOURCES)
+
+  // Fetch AI news with auto-refresh every 10 seconds
+  const { data, error, mutate } = useSWR(
+    '/api/news-ai',
     fetcher,
     {
-      refreshInterval: 10000, // Refresh every 10 seconds
+      refreshInterval: 10000,
       revalidateOnFocus: true,
-      onSuccess: () => {
-        setLastRefreshed(new Date())
-      }
     }
   )
 
@@ -35,11 +40,11 @@ export default function Home() {
   useEffect(() => {
     const initialScrape = async () => {
       try {
-        await fetch('/api/scrape', { method: 'POST' })
+        await fetch('/api/scrape-ai', { method: 'POST' })
         setIsScrapingInitial(false)
-        mutate() // Refresh the news data
+        mutate()
       } catch (error) {
-        console.error('Initial scrape failed:', error)
+        console.error('Initial AI scrape failed:', error)
         setIsScrapingInitial(false)
       }
     }
@@ -51,15 +56,31 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        await fetch('/api/scrape', { method: 'POST' })
-        mutate() // Refresh the news data
+        await fetch('/api/scrape-ai', { method: 'POST' })
+        mutate()
       } catch (error) {
-        console.error('Periodic scrape failed:', error)
+        console.error('Periodic AI scrape failed:', error)
       }
-    }, 5 * 60 * 1000) // 5 minutes
+    }, 5 * 60 * 1000)
 
     return () => clearInterval(interval)
   }, [mutate])
+
+  const toggleAll = () => {
+    const newSelected = selectedSources.length === AI_SOURCES.length
+      ? [AI_SOURCES[0]]
+      : AI_SOURCES
+    setSelectedSources(newSelected)
+  }
+
+  const toggleSource = (source: string) => {
+    if (selectedSources.includes(source)) {
+      if (selectedSources.length === 1) return
+      setSelectedSources(selectedSources.filter(s => s !== source))
+    } else {
+      setSelectedSources([...selectedSources, source])
+    }
+  }
 
   const allArticles: NewsArticle[] = data?.data || []
   const articles = allArticles.filter(article => selectedSources.includes(article.source))
@@ -77,17 +98,17 @@ export default function Home() {
                   Niminal
                 </h1>
                 <p className="text-sm text-slate-200 mt-1">
-                  News without the noise.
+                  AI Edition
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               <Link
-                href="/ai"
+                href="/"
                 className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
-                AI
+                Crypto
               </Link>
               <Link
                 href="/about"
@@ -104,13 +125,44 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Source Filter */}
-        <SourceFilter onFilterChange={setSelectedSources} />
+        <div className="mb-6">
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <button
+              onClick={toggleAll}
+              className={`px-2 py-1 text-xs font-medium rounded transition-colors flex-shrink-0 ${
+                selectedSources.length === AI_SOURCES.length
+                  ? 'bg-slate-700 dark:bg-slate-300 text-white dark:text-slate-900'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+            >
+              All
+            </button>
+
+            <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 flex-shrink-0" />
+
+            <div className="flex gap-1.5 flex-shrink-0">
+              {AI_SOURCES.map(source => (
+                <button
+                  key={source}
+                  onClick={() => toggleSource(source)}
+                  className={`px-2 py-1 text-xs rounded transition-colors whitespace-nowrap ${
+                    selectedSources.includes(source)
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'
+                      : 'text-slate-400 dark:text-slate-500 border border-transparent hover:text-slate-600 dark:hover:text-slate-400'
+                  }`}
+                >
+                  {source}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {isScrapingInitial && allArticles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
             <p className="text-slate-600 dark:text-slate-400">
-              Loading latest crypto news...
+              Loading latest AI news...
             </p>
           </div>
         ) : error ? (
@@ -122,7 +174,7 @@ export default function Home() {
         ) : articles.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-slate-600 dark:text-slate-400">
-              No news articles found. The scraper will fetch new articles shortly.
+              No AI news articles found. The scraper will fetch new articles shortly.
             </p>
           </div>
         ) : (
@@ -146,7 +198,7 @@ export default function Home() {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Updates every 10 seconds • 8 Sources • Max 3 articles per source
+            Updates every 10 seconds • 9 Sources • Max 3 articles per source
           </p>
         </div>
       </footer>

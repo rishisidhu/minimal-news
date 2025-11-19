@@ -1,4 +1,4 @@
-# Minimal News - Todo List
+# Niminal - Todo List
 
 ## 📋 OPEN TASKS
 
@@ -358,3 +358,107 @@ Minimal News is now live and fully branded with a clear minimalist philosophy. T
 
 ### Result
 Minimal News now aggregates from 8 sources (up from 3), with balanced coverage (max 3 per source) and user-controlled filtering. The UI remains clean with color-coded source badges and persistent filter preferences.
+
+---
+
+## 📝 SESSION 12 REVIEW
+
+### Summary of Changes
+
+**1. Filter UI Redesign**
+- Simplified All/None buttons to single "All" toggle
+- Toggle behavior: All selected → CoinDesk only, Not all → All selected
+- Made pills more compact with softer styling
+
+**2. Logo & Favicon Creation**
+- Created custom "M" lettermark with distinctive angular design
+- SVG path-based logo differentiates from Medium.com
+- Added `app/icon.svg` for favicon
+- Added `components/Logo.tsx` for header
+
+**3. AI News Page (Major Feature)**
+Created complete AI news section with 9 sources:
+- OpenAI Blog
+- MIT Technology Review
+- TechCrunch AI (RSS)
+- Wired AI (RSS)
+- VentureBeat AI (RSS)
+- Google DeepMind Blog
+- Meta AI Research Blog
+- NVIDIA AI Blog
+- Hugging Face Blog
+
+**4. Navigation**
+- Added "AI" button to crypto page header
+- Added "Crypto" button to AI page header
+- Both pages link to About page
+
+### Files Created (14 files)
+
+**Scrapers (9 files):**
+1. `lib/scrapers/openai.ts`
+2. `lib/scrapers/mit-tech-review.ts`
+3. `lib/scrapers/techcrunch-ai.ts`
+4. `lib/scrapers/wired-ai.ts`
+5. `lib/scrapers/venturebeat-ai.ts`
+6. `lib/scrapers/deepmind.ts`
+7. `lib/scrapers/meta-ai.ts`
+8. `lib/scrapers/nvidia-ai.ts`
+9. `lib/scrapers/huggingface.ts`
+
+**API Routes (2 files):**
+10. `app/api/scrape-ai/route.ts` - Orchestrates all AI scrapers
+11. `app/api/news-ai/route.ts` - Fetches AI articles from DB
+
+**Page & Components (3 files):**
+12. `app/ai/page.tsx` - AI news page with filtering
+13. `app/icon.svg` - Favicon
+14. `components/Logo.tsx` - Header logo component
+
+### Files Modified (3 files)
+1. `app/page.tsx` - Added Logo import, AI navigation button
+2. `components/SourceFilter.tsx` - Simplified to single All toggle
+3. `components/NewsCard.tsx` - Added 9 AI source colors
+
+### Technical Notes
+- AI scrapers follow same patterns as crypto scrapers (RSS or HTML)
+- AI sources stored in same `news_articles` table, filtered by source name
+- API routes filter using `IN` clause for AI source names
+- 3-per-source limit applies to AI articles too
+- Logo uses custom SVG path for distinctive angular M design
+
+### Result
+Minimal News now has two content sections - Crypto and AI - each with dedicated sources, scrapers, and filtering. Navigation between sections is seamless, and both share the same visual design and user experience patterns.
+
+---
+
+## 📝 SESSION 12 CONTINUED: Rebrand to Niminal
+
+### Summary of Changes
+
+**Rebrand to Niminal**
+- Changed brand name from "Minimal News" to "Niminal"
+- New tagline: "News without the noise."
+- Acquired domain: niminal.xyz
+
+**Logo Updates**
+- Updated logo from M lettermark to N lettermark
+- Updated Logo.tsx SVG path to N design
+- Updated icon.svg favicon to N lettermark
+
+### Files Modified (6 files)
+1. `app/layout.tsx` - Updated metadata title and description to Niminal
+2. `app/page.tsx` - Updated header to Niminal branding
+3. `app/ai/page.tsx` - Updated header to Niminal branding
+4. `app/about/page.tsx` - Updated all references to Niminal
+5. `README.md` - Rebranded to Niminal with new demo URL
+6. `components/Logo.tsx` - Changed M lettermark to N lettermark
+7. `app/icon.svg` - Changed favicon from M to N lettermark
+
+### Technical Notes
+- N lettermark SVG path: `d="M9 24V8h2.5l6.5 11V8H21v16h-2.5L12 13v11H9z"`
+- Tagline "News without the noise." reflects minimalist philosophy
+- All pages now consistently branded as Niminal
+
+### Result
+The application is now fully rebranded as Niminal with a distinctive N lettermark logo. The new brand name maintains the minimalist philosophy while being more unique and memorable. The logo and favicon are consistent across the application.

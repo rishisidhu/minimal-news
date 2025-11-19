@@ -12,6 +12,7 @@ interface NewsCardProps {
 export default function NewsCard({ article, featured = false }: NewsCardProps) {
   const getSourceColor = (source: string) => {
     switch (source) {
+      // Crypto sources
       case 'CoinDesk':
         return 'bg-blue-600 dark:bg-blue-700'
       case 'The Block':
@@ -28,6 +29,25 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         return 'bg-red-600 dark:bg-red-700'
       case 'Messari':
         return 'bg-cyan-600 dark:bg-cyan-700'
+      // AI sources
+      case 'OpenAI':
+        return 'bg-emerald-600 dark:bg-emerald-700'
+      case 'MIT Tech Review':
+        return 'bg-red-600 dark:bg-red-700'
+      case 'TechCrunch':
+        return 'bg-green-600 dark:bg-green-700'
+      case 'Wired':
+        return 'bg-black dark:bg-gray-900'
+      case 'VentureBeat':
+        return 'bg-blue-600 dark:bg-blue-700'
+      case 'DeepMind':
+        return 'bg-indigo-600 dark:bg-indigo-700'
+      case 'Meta AI':
+        return 'bg-blue-500 dark:bg-blue-600'
+      case 'NVIDIA':
+        return 'bg-lime-600 dark:bg-lime-700'
+      case 'Hugging Face':
+        return 'bg-yellow-500 dark:bg-yellow-600'
       default:
         return 'bg-slate-600 dark:bg-slate-700'
     }
