@@ -19,9 +19,9 @@ interface RedditPost {
   }
 }
 
-export async function scrapeReddit(): Promise<NewsArticle[]> {
+async function scrapeSubreddit(subreddit: string, sourceName: string): Promise<NewsArticle[]> {
   try {
-    const response = await axios.get('https://www.reddit.com/r/CryptoCurrency/hot.json?limit=15', {
+    const response = await axios.get(`https://www.reddit.com/r/${subreddit}/hot.json?limit=10`, {
       timeout: 10000,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -33,15 +33,12 @@ export async function scrapeReddit(): Promise<NewsArticle[]> {
       }
     })
 
-    // Log response for debugging
     if (!response.data || !response.data.data || !response.data.data.children) {
-      console.error('Reddit API returned unexpected structure:', JSON.stringify(response.data).substring(0, 200))
+      console.error(`${sourceName}: API returned unexpected structure`)
       return []
     }
 
     const posts: RedditPost[] = response.data.data.children || []
-    console.log(`Reddit: Successfully fetched ${posts.length} posts`)
-
     const articles: NewsArticle[] = []
 
     for (const post of posts) {
@@ -49,7 +46,6 @@ export async function scrapeReddit(): Promise<NewsArticle[]> {
 
       if (!title || title.length < 10) continue
 
-      // Get image URL
       let imageUrl: string | null = null
       if (preview && preview.images && preview.images[0]) {
         imageUrl = preview.images[0].source.url.replace(/&amp;/g, '&')
@@ -57,34 +53,36 @@ export async function scrapeReddit(): Promise<NewsArticle[]> {
         imageUrl = thumbnail
       }
 
-      // Create excerpt from selftext
       const excerpt = selftext
-        ? selftext.substring(0, 1000).trim()
+        ? selftext.substring(0, 500).trim()
         : title
 
       articles.push({
         title,
         excerpt,
         image_url: imageUrl,
-        source: 'Reddit',
+        source: sourceName,
         article_url: `https://www.reddit.com${permalink}`,
         published_at: new Date(created_utc * 1000).toISOString(),
       })
     }
 
-    console.log(`Reddit: Returning ${articles.length} articles`)
+    console.log(`${sourceName}: Scraped ${articles.length} articles`)
     return articles
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Reddit API Error:', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: JSON.stringify(error.response?.data).substring(0, 200),
-        message: error.message
-      })
-    } else {
-      console.error('Error scraping Reddit:', error)
-    }
+    console.error(`Error scraping ${sourceName}:`, error)
     return []
   }
+}
+
+export async function scrapeRedditProductManagement(): Promise<NewsArticle[]> {
+  return scrapeSubreddit('ProductManagement', 'r/ProductManagement')
+}
+
+export async function scrapeRedditUserExperience(): Promise<NewsArticle[]> {
+  return scrapeSubreddit('userexperience', 'r/UserExperience')
+}
+
+export async function scrapeRedditUXDesign(): Promise<NewsArticle[]> {
+  return scrapeSubreddit('UXDesign', 'r/UXDesign')
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 import NewsCard from '@/components/NewsCard'
@@ -8,31 +8,23 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
-const AI_SOURCES = [
-  'OpenAI',
-  'MIT Tech Review',
-  'TechCrunch',
-  'Wired',
-  'VentureBeat',
-  'DeepMind',
-  'Meta AI',
-  'NVIDIA',
-  'Hugging Face',
+const PRODUCT_SOURCES = [
+  'Hacker News',
+  'First Round',
+  'Product School'
 ]
 
-export default function AINews() {
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
-  const [selectedSources, setSelectedSources] = useState<string[]>(AI_SOURCES)
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
-  // Fetch AI news with auto-refresh every 10 seconds
-  const { data, error, mutate } = useSWR(
-    '/api/news-ai',
+export default function ProductPage() {
+  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
+  const [selectedSources, setSelectedSources] = useState<string[]>(PRODUCT_SOURCES)
+
+  const { data, error, isLoading } = useSWR(
+    '/api/news-product',
     fetcher,
     {
       refreshInterval: 10000,
-      revalidateOnFocus: true,
     }
   )
 
@@ -40,50 +32,59 @@ export default function AINews() {
   useEffect(() => {
     const initialScrape = async () => {
       try {
-        await fetch('/api/scrape-ai', { method: 'POST' })
-        setIsScrapingInitial(false)
-        mutate()
-      } catch (error) {
-        console.error('Initial AI scrape failed:', error)
+        await fetch('/api/scrape-product', { method: 'POST' })
+      } catch (err) {
+        console.error('Initial scrape failed:', err)
+      } finally {
         setIsScrapingInitial(false)
       }
     }
-
     initialScrape()
-  }, [mutate])
+  }, [])
 
   // Periodic scraping every 5 minutes
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        await fetch('/api/scrape-ai', { method: 'POST' })
-        mutate()
-      } catch (error) {
-        console.error('Periodic AI scrape failed:', error)
+        await fetch('/api/scrape-product', { method: 'POST' })
+      } catch (err) {
+        console.error('Periodic scrape failed:', err)
       }
     }, 5 * 60 * 1000)
 
     return () => clearInterval(interval)
-  }, [mutate])
+  }, [])
 
   const toggleAll = () => {
-    const newSelected = selectedSources.length === AI_SOURCES.length
-      ? [AI_SOURCES[0]]
-      : AI_SOURCES
+    const newSelected = selectedSources.length === PRODUCT_SOURCES.length
+      ? [PRODUCT_SOURCES[0]]
+      : PRODUCT_SOURCES
     setSelectedSources(newSelected)
   }
 
   const toggleSource = (source: string) => {
     if (selectedSources.includes(source)) {
-      if (selectedSources.length === 1) return
-      setSelectedSources(selectedSources.filter(s => s !== source))
+      if (selectedSources.length > 1) {
+        setSelectedSources(selectedSources.filter(s => s !== source))
+      }
     } else {
       setSelectedSources([...selectedSources, source])
     }
   }
 
-  const allArticles: NewsArticle[] = data?.data || []
-  const articles = allArticles.filter(article => selectedSources.includes(article.source))
+  const articles: NewsArticle[] = data?.data || []
+  const filteredArticles = articles.filter(article => selectedSources.includes(article.source))
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600">Failed to load news</h2>
+          <p className="text-slate-600 dark:text-slate-400">Please try again later</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -98,7 +99,7 @@ export default function AINews() {
                   Niminal
                 </h1>
                 <p className="text-sm text-slate-200 mt-1">
-                  AI Edition
+                  Product Edition
                 </p>
               </div>
             </div>
@@ -111,10 +112,10 @@ export default function AINews() {
                 Crypto
               </Link>
               <Link
-                href="/product"
+                href="/ai"
                 className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
-                Product
+                AI
               </Link>
               <Link
                 href="/about"
@@ -128,15 +129,14 @@ export default function AINews() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Source Filter */}
+      {/* Source Filter */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="mb-6">
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <button
               onClick={toggleAll}
               className={`px-2 py-1 text-xs font-medium rounded transition-colors flex-shrink-0 ${
-                selectedSources.length === AI_SOURCES.length
+                selectedSources.length === PRODUCT_SOURCES.length
                   ? 'bg-slate-700 dark:bg-slate-300 text-white dark:text-slate-900'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
@@ -147,7 +147,7 @@ export default function AINews() {
             <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 flex-shrink-0" />
 
             <div className="flex gap-1.5 flex-shrink-0">
-              {AI_SOURCES.map(source => (
+              {PRODUCT_SOURCES.map(source => (
                 <button
                   key={source}
                   onClick={() => toggleSource(source)}
@@ -163,25 +163,44 @@ export default function AINews() {
             </div>
           </div>
         </div>
+      </div>
 
-        {isScrapingInitial && allArticles.length === 0 ? (
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {(isLoading || isScrapingInitial) ? (
           <div className="space-y-6">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...
             </p>
             {/* Skeleton loading cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
-                  <div className="h-32 bg-slate-200 dark:bg-slate-700" />
-                  <div className="p-4 space-y-3">
+            <div className="space-y-4">
+              {/* Featured skeleton */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
+                <div className="h-64 bg-slate-200 dark:bg-slate-700" />
+                <div className="p-4 space-y-3">
+                  <div className="flex gap-2">
+                    <div className="h-6 w-24 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                    <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+                  </div>
+                  <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                  <div className="space-y-2">
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+                  </div>
+                </div>
+              </div>
+              {/* Regular skeletons */}
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse flex">
+                  <div className="w-1/3 bg-slate-200 dark:bg-slate-700" />
+                  <div className="p-4 space-y-3 flex-1">
                     <div className="flex gap-2">
                       <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
                       <div className="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
                     </div>
                     <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
                     <div className="space-y-2">
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
                       <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
                       <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
                     </div>
@@ -190,29 +209,21 @@ export default function AINews() {
               ))}
             </div>
           </div>
-        ) : error ? (
-          <div className="text-center py-20">
-            <p className="text-red-600 dark:text-red-400">
-              Failed to load news. Please check your Supabase configuration.
-            </p>
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-slate-600 dark:text-slate-400">
-              No AI news articles found. The scraper will fetch new articles shortly.
-            </p>
+        ) : filteredArticles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-slate-600 dark:text-slate-400">No articles found. Try selecting more sources.</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-4">
             {/* Featured Article */}
-            {articles[0] && (
-              <NewsCard article={articles[0]} featured />
+            {filteredArticles[0] && (
+              <NewsCard article={filteredArticles[0]} featured />
             )}
 
             {/* Regular Articles */}
             <div className="space-y-4">
-              {articles.slice(1).map((article) => (
-                <NewsCard key={article.id} article={article} />
+              {filteredArticles.slice(1).map((article) => (
+                <NewsCard key={article.id || article.article_url} article={article} />
               ))}
             </div>
           </div>
@@ -223,7 +234,7 @@ export default function AINews() {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Updates every 10 seconds • 9 Sources • Max 3 articles per source
+            Showing {filteredArticles.length} articles from {selectedSources.length} sources
           </p>
         </div>
       </footer>

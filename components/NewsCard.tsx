@@ -48,30 +48,49 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         return 'bg-lime-600 dark:bg-lime-700'
       case 'Hugging Face':
         return 'bg-yellow-500 dark:bg-yellow-600'
+      // Product sources
+      case 'r/ProductManagement':
+        return 'bg-orange-600 dark:bg-orange-700'
+      case 'r/UserExperience':
+        return 'bg-orange-500 dark:bg-orange-600'
+      case 'r/UXDesign':
+        return 'bg-orange-400 dark:bg-orange-500'
+      case 'Hacker News':
+        return 'bg-amber-600 dark:bg-amber-700'
+      case 'Product Hunt':
+        return 'bg-red-500 dark:bg-red-600'
+      case 'a16z':
+        return 'bg-red-600 dark:bg-red-700'
+      case 'First Round':
+        return 'bg-teal-600 dark:bg-teal-700'
+      case 'Product School':
+        return 'bg-violet-600 dark:bg-violet-700'
+      case 'IndieHackers':
+        return 'bg-blue-600 dark:bg-blue-700'
       default:
         return 'bg-slate-600 dark:bg-slate-700'
     }
   }
 
-  // Truncate to 50 words or nearest complete sentence
+  // Truncate to 200 words or nearest complete sentence
   const truncateToWords = (text: string, maxWords: number): string => {
     const words = text.split(/\s+/)
     if (words.length <= maxWords) return text
 
-    // Get first 50 words
+    // Get first maxWords words
     const truncated = words.slice(0, maxWords).join(' ')
 
     // Find nearest sentence end after truncation point
     const sentenceEnd = text.indexOf('.', truncated.length)
-    if (sentenceEnd !== -1 && sentenceEnd - truncated.length < 50) {
-      // If there's a period within 50 chars, use it
+    if (sentenceEnd !== -1 && sentenceEnd - truncated.length < 150) {
+      // If there's a period within 150 chars, use it
       return text.substring(0, sentenceEnd + 1)
     }
 
     return truncated + '...'
   }
 
-  const truncatedExcerpt = truncateToWords(article.excerpt, 50)
+  const truncatedExcerpt = truncateToWords(article.excerpt, 300)
 
   if (featured) {
     return (
@@ -90,18 +109,6 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
           </div>
         )}
 
-        <a
-          href={article.article_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute top-4 right-4 bg-slate-800 dark:bg-slate-700 p-2 rounded-full shadow-lg hover:scale-110 transition-transform opacity-0 group-hover:opacity-100"
-          title="Read full article"
-        >
-          <svg className="w-5 h-5 text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-
         <div className="p-4 relative">
           <div className="flex items-center gap-2 mb-2">
             <span className={`${getSourceColor(article.source)} text-white text-xs font-semibold px-2 py-1 rounded-full uppercase tracking-wide`}>
@@ -116,7 +123,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             {article.title}
           </h2>
 
-          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-7 mb-4">
+          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-16 mb-4">
             {truncatedExcerpt}
           </p>
 
@@ -168,7 +175,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             {article.title}
           </h3>
 
-          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-6 mb-3">
+          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-14 mb-3">
             {truncatedExcerpt}
           </p>
 

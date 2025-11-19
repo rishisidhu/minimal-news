@@ -90,6 +90,12 @@ export default function Home() {
                 AI
               </Link>
               <Link
+                href="/product"
+                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+              >
+                Product
+              </Link>
+              <Link
                 href="/about"
                 className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
@@ -107,11 +113,30 @@ export default function Home() {
         <SourceFilter onFilterChange={setSelectedSources} />
 
         {isScrapingInitial && allArticles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">
-              Loading latest crypto news...
+          <div className="space-y-6">
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
+              Fetching latest articles...
             </p>
+            {/* Skeleton loading cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
+                  <div className="h-32 bg-slate-200 dark:bg-slate-700" />
+                  <div className="p-4 space-y-3">
+                    <div className="flex gap-2">
+                      <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                      <div className="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
+                    </div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : error ? (
           <div className="text-center py-20">
