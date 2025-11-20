@@ -7,6 +7,7 @@ import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
+import { prefetchOtherNews } from '@/lib/prefetch'
 
 const PRODUCT_SOURCES = [
   'Hacker News',
@@ -17,7 +18,6 @@ const PRODUCT_SOURCES = [
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export default function ProductPage() {
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
   const [selectedSources, setSelectedSources] = useState<string[]>(PRODUCT_SOURCES)
 
   const { data, error, isLoading } = useSWR(
@@ -27,20 +27,6 @@ export default function ProductPage() {
       refreshInterval: 10000,
     }
   )
-
-  // Initial scrape on mount
-  useEffect(() => {
-    const initialScrape = async () => {
-      try {
-        await fetch('/api/scrape-product', { method: 'POST' })
-      } catch (err) {
-        console.error('Initial scrape failed:', err)
-      } finally {
-        setIsScrapingInitial(false)
-      }
-    }
-    initialScrape()
-  }, [])
 
   // Periodic scraping every 5 minutes
   useEffect(() => {
@@ -53,6 +39,11 @@ export default function ProductPage() {
     }, 5 * 60 * 1000)
 
     return () => clearInterval(interval)
+  }, [])
+
+  // Prefetch other sections in background
+  useEffect(() => {
+    prefetchOtherNews('product')
   }, [])
 
   const toggleAll = () => {
@@ -173,7 +164,7 @@ export default function ProductPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {(isLoading || isScrapingInitial) ? (
+        {isLoading ? (
           <div className="space-y-6">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...

@@ -8,12 +8,12 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import SourceFilter from '@/components/SourceFilter'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
+import { prefetchOtherNews } from '@/lib/prefetch'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function Home() {
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
   const [selectedSources, setSelectedSources] = useState<string[]>([
     'CoinDesk', 'The Block', 'Reddit', 'Cointelegraph', 'CryptoPotato', 'Paradigm', 'a16z Crypto', 'Messari'
   ])
@@ -31,22 +31,6 @@ export default function Home() {
     }
   )
 
-  // Initial scrape on mount
-  useEffect(() => {
-    const initialScrape = async () => {
-      try {
-        await fetch('/api/scrape', { method: 'POST' })
-        setIsScrapingInitial(false)
-        mutate() // Refresh the news data
-      } catch (error) {
-        console.error('Initial scrape failed:', error)
-        setIsScrapingInitial(false)
-      }
-    }
-
-    initialScrape()
-  }, [mutate])
-
   // Periodic scraping every 5 minutes
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -60,6 +44,11 @@ export default function Home() {
 
     return () => clearInterval(interval)
   }, [mutate])
+
+  // Prefetch other sections in background
+  useEffect(() => {
+    prefetchOtherNews('crypto')
+  }, [])
 
   const allArticles: NewsArticle[] = data?.data || []
   const articles = allArticles.filter(article => selectedSources.includes(article.source))
@@ -118,7 +107,7 @@ export default function Home() {
         {/* Source Filter */}
         <SourceFilter onFilterChange={setSelectedSources} />
 
-        {isScrapingInitial && allArticles.length === 0 ? (
+        {isLoading && allArticles.length === 0 ? (
           <div className="space-y-6">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...

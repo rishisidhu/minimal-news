@@ -7,6 +7,7 @@ import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
+import { prefetchOtherNews } from '@/lib/prefetch'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -18,11 +19,10 @@ const AI_SOURCES = [
 ]
 
 export default function AINews() {
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
   const [selectedSources, setSelectedSources] = useState<string[]>(AI_SOURCES)
 
   // Fetch AI news with auto-refresh every 10 seconds
-  const { data, error, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     '/api/news-ai',
     fetcher,
     {
@@ -30,22 +30,6 @@ export default function AINews() {
       revalidateOnFocus: true,
     }
   )
-
-  // Initial scrape on mount
-  useEffect(() => {
-    const initialScrape = async () => {
-      try {
-        await fetch('/api/scrape-ai', { method: 'POST' })
-        setIsScrapingInitial(false)
-        mutate()
-      } catch (error) {
-        console.error('Initial AI scrape failed:', error)
-        setIsScrapingInitial(false)
-      }
-    }
-
-    initialScrape()
-  }, [mutate])
 
   // Periodic scraping every 5 minutes
   useEffect(() => {
@@ -60,6 +44,11 @@ export default function AINews() {
 
     return () => clearInterval(interval)
   }, [mutate])
+
+  // Prefetch other sections in background
+  useEffect(() => {
+    prefetchOtherNews('ai')
+  }, [])
 
   const toggleAll = () => {
     const newSelected = selectedSources.length === AI_SOURCES.length
@@ -165,7 +154,7 @@ export default function AINews() {
           </div>
         </div>
 
-        {isScrapingInitial && allArticles.length === 0 ? (
+        {isLoading && allArticles.length === 0 ? (
           <div className="space-y-6">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...
