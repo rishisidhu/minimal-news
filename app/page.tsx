@@ -8,84 +8,98 @@ export default function HomePage() {
   const categories = [
     {
       title: 'Crypto',
-      description: 'Stay updated with the latest in cryptocurrency and blockchain',
+      description: 'Cryptocurrency & Blockchain',
       href: '/crypto',
       emoji: '₿',
-      gradient: 'from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20',
-      border: 'border-blue-500/20 hover:border-blue-500/40'
     },
     {
       title: 'AI',
-      description: 'Discover the cutting edge of artificial intelligence',
+      description: 'Artificial Intelligence',
       href: '/ai',
       emoji: '🤖',
-      gradient: 'from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20',
-      border: 'border-purple-500/20 hover:border-purple-500/40'
     },
     {
       title: 'Product',
-      description: 'Learn from the best in product management and design',
+      description: 'Management & Design',
       href: '/product',
       emoji: '🚀',
-      gradient: 'from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20',
-      border: 'border-orange-500/20 hover:border-orange-500/40'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
+      {/* Spotlight effect - radial gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(0,0,0,0.02),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,rgba(255,255,255,0.03),transparent_50%)]" />
+
       {/* Theme Toggle */}
-      <div className="absolute top-6 right-6">
+      <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
 
       {/* Main Content */}
-      <main className="flex flex-col items-center justify-center min-h-screen px-4 py-12">
+      <main className="relative flex flex-col items-center justify-center min-h-screen px-4 py-16">
         {/* Logo and Brand */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <Logo className="w-16 h-16" />
+        <div className="text-center mb-24">
+          <div className="flex justify-center mb-10">
+            <Logo className="w-16 h-16 opacity-60" />
           </div>
-          <h1 className="font-serif text-6xl font-semibold text-slate-900 dark:text-white mb-4">
-            Niminal
+          <h1 className="font-serif text-8xl font-extralight tracking-wider text-black dark:text-white mb-8" style={{ letterSpacing: '0.15em' }}>
+            NIMINAL
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            News without the noise.
+          <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-black/20 dark:via-white/30 to-transparent mb-8" />
+          <p className="text-sm tracking-[0.3em] text-black/50 dark:text-white/40 font-light uppercase">
+            News Without The Noise
           </p>
         </div>
 
-        {/* Category Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full">
+        {/* Category Cards - Smaller tiles with glass effect */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl w-full">
           {categories.map((category) => (
             <Link
               key={category.href}
               href={category.href}
-              className={`group relative bg-white dark:bg-slate-900 rounded-2xl p-8 border-2 ${category.border} bg-gradient-to-br ${category.gradient} transition-all duration-300 hover:shadow-lg hover:-translate-y-1`}
+              className="group relative"
             >
-              <div className="text-5xl mb-4">{category.emoji}</div>
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-2">
-                {category.title}
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                {category.description}
-              </p>
-              <div className="mt-6 flex items-center text-sm font-medium text-slate-700 dark:text-slate-300">
-                Explore
-                <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+              {/* Glass card with reflection */}
+              <div className="relative bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl p-6 transition-all duration-500 hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/20 overflow-hidden">
+                {/* Reflection effect - gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-black/10 dark:from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Subtle spotlight on hover */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-black/0 dark:from-white/0 via-black/5 dark:via-white/5 to-black/0 dark:to-white/0 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+
+                {/* Content */}
+                <div className="relative">
+                  <div className="text-4xl mb-4 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                    {category.emoji}
+                  </div>
+                  <h2 className="text-lg font-light tracking-wider text-black dark:text-white mb-2 uppercase" style={{ letterSpacing: '0.1em' }}>
+                    {category.title}
+                  </h2>
+                  <p className="text-xs text-black/50 dark:text-white/40 font-light tracking-wide">
+                    {category.description}
+                  </p>
+
+                  {/* Arrow indicator */}
+                  <div className="mt-6 flex items-center text-[10px] font-light tracking-[0.2em] uppercase text-black/40 dark:text-white/30 group-hover:text-black/70 dark:group-hover:text-white/60 transition-colors">
+                    Enter
+                    <svg className="ml-2 w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </Link>
           ))}
         </div>
 
         {/* About Link */}
-        <div className="mt-12">
+        <div className="mt-20">
           <Link
             href="/about"
-            className="text-sm text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+            className="text-[10px] tracking-[0.3em] uppercase text-white/20 hover:text-white/40 transition-colors font-extralight"
           >
-            About Niminal
+            About
           </Link>
         </div>
       </main>
