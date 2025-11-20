@@ -100,7 +100,7 @@ export default function AINews() {
 
             <div className="flex items-center gap-2">
               <Link
-                href="/"
+                href="/crypto"
                 className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 Crypto

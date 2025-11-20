@@ -1,30 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import SourceFilter from '@/components/SourceFilter'
 import Logo from '@/components/Logo'
 import { NewsArticle } from '@/lib/supabase'
 
-const PRODUCT_SOURCES = [
-  'Hacker News',
-  'First Round',
-  'Product School'
-]
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
-
-export default function ProductPage() {
+export default function Home() {
+  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
   const [isScrapingInitial, setIsScrapingInitial] = useState(true)
-  const [selectedSources, setSelectedSources] = useState<string[]>(PRODUCT_SOURCES)
+  const [selectedSources, setSelectedSources] = useState<string[]>([
+    'CoinDesk', 'The Block', 'Reddit', 'Cointelegraph', 'CryptoPotato', 'Paradigm', 'a16z Crypto', 'Messari'
+  ])
 
-  const { data, error, isLoading } = useSWR(
-    '/api/news-product',
+  // Fetch news with auto-refresh every 10 seconds
+  const { data, error, isLoading, mutate } = useSWR(
+    '/api/news',
     fetcher,
     {
-      refreshInterval: 10000,
+      refreshInterval: 10000, // Refresh every 10 seconds
+      revalidateOnFocus: true,
+      onSuccess: () => {
+        setLastRefreshed(new Date())
+      }
     }
   )
 
@@ -32,59 +35,34 @@ export default function ProductPage() {
   useEffect(() => {
     const initialScrape = async () => {
       try {
-        await fetch('/api/scrape-product', { method: 'POST' })
-      } catch (err) {
-        console.error('Initial scrape failed:', err)
-      } finally {
+        await fetch('/api/scrape', { method: 'POST' })
+        setIsScrapingInitial(false)
+        mutate() // Refresh the news data
+      } catch (error) {
+        console.error('Initial scrape failed:', error)
         setIsScrapingInitial(false)
       }
     }
+
     initialScrape()
-  }, [])
+  }, [mutate])
 
   // Periodic scraping every 5 minutes
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        await fetch('/api/scrape-product', { method: 'POST' })
-      } catch (err) {
-        console.error('Periodic scrape failed:', err)
+        await fetch('/api/scrape', { method: 'POST' })
+        mutate() // Refresh the news data
+      } catch (error) {
+        console.error('Periodic scrape failed:', error)
       }
-    }, 5 * 60 * 1000)
+    }, 5 * 60 * 1000) // 5 minutes
 
     return () => clearInterval(interval)
-  }, [])
+  }, [mutate])
 
-  const toggleAll = () => {
-    const newSelected = selectedSources.length === PRODUCT_SOURCES.length
-      ? [PRODUCT_SOURCES[0]]
-      : PRODUCT_SOURCES
-    setSelectedSources(newSelected)
-  }
-
-  const toggleSource = (source: string) => {
-    if (selectedSources.includes(source)) {
-      if (selectedSources.length > 1) {
-        setSelectedSources(selectedSources.filter(s => s !== source))
-      }
-    } else {
-      setSelectedSources([...selectedSources, source])
-    }
-  }
-
-  const articles: NewsArticle[] = data?.data || []
-  const filteredArticles = articles.filter(article => selectedSources.includes(article.source))
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600">Failed to load news</h2>
-          <p className="text-slate-600 dark:text-slate-400">Please try again later</p>
-        </div>
-      </div>
-    )
-  }
+  const allArticles: NewsArticle[] = data?.data || []
+  const articles = allArticles.filter(article => selectedSources.includes(article.source))
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -99,7 +77,7 @@ export default function ProductPage() {
                   Niminal
                 </h1>
                 <p className="text-sm text-slate-200 mt-1">
-                  Product Edition
+                  News without the noise.
                 </p>
               </div>
             </div>
@@ -107,7 +85,7 @@ export default function ProductPage() {
             <div className="flex items-center gap-2">
               <Link
                 href="/crypto"
-                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-white/20 border border-slate-400/30 rounded-md"
               >
                 Crypto
               </Link>
@@ -119,7 +97,7 @@ export default function ProductPage() {
               </Link>
               <Link
                 href="/product"
-                className="px-3 py-1.5 text-xs font-medium text-white bg-white/20 border border-slate-400/30 rounded-md"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 Product
               </Link>
@@ -135,45 +113,12 @@ export default function ProductPage() {
         </div>
       </header>
 
-      {/* Source Filter */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="mb-6">
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            <button
-              onClick={toggleAll}
-              className={`px-2 py-1 text-xs font-medium rounded transition-colors flex-shrink-0 ${
-                selectedSources.length === PRODUCT_SOURCES.length
-                  ? 'bg-slate-700 dark:bg-slate-300 text-white dark:text-slate-900'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              All
-            </button>
-
-            <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 flex-shrink-0" />
-
-            <div className="flex gap-1.5 flex-shrink-0">
-              {PRODUCT_SOURCES.map(source => (
-                <button
-                  key={source}
-                  onClick={() => toggleSource(source)}
-                  className={`px-2 py-1 text-xs rounded transition-colors whitespace-nowrap ${
-                    selectedSources.includes(source)
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'
-                      : 'text-slate-400 dark:text-slate-500 border border-transparent hover:text-slate-600 dark:hover:text-slate-400'
-                  }`}
-                >
-                  {source}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {(isLoading || isScrapingInitial) ? (
+        {/* Source Filter */}
+        <SourceFilter onFilterChange={setSelectedSources} />
+
+        {isScrapingInitial && allArticles.length === 0 ? (
           <div className="space-y-6">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...
@@ -192,23 +137,31 @@ export default function ProductPage() {
               ))}
             </div>
           </div>
-        ) : filteredArticles.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-600 dark:text-slate-400">No articles found. Try selecting more sources.</p>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p className="text-red-600 dark:text-red-400">
+              Failed to load news. Please check your Supabase configuration.
+            </p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-slate-600 dark:text-slate-400">
+              No news articles found. The scraper will fetch new articles shortly.
+            </p>
           </div>
         ) : (
           <div className="space-y-8">
             {/* Featured row - 2 columns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredArticles.slice(0, 2).map((article) => (
-                <NewsCard key={article.id || article.article_url} article={article} featured />
+              {articles.slice(0, 2).map((article) => (
+                <NewsCard key={article.id} article={article} featured />
               ))}
             </div>
 
             {/* Regular articles - 3 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredArticles.slice(2).map((article) => (
-                <NewsCard key={article.id || article.article_url} article={article} />
+              {articles.slice(2).map((article) => (
+                <NewsCard key={article.id} article={article} />
               ))}
             </div>
           </div>
@@ -219,7 +172,7 @@ export default function ProductPage() {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Showing {filteredArticles.length} articles from {selectedSources.length} sources
+            Updates every 10 seconds • 8 Sources • Max 3 articles per source
           </p>
         </div>
       </footer>

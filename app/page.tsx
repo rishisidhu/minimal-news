@@ -1,181 +1,94 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
 import Link from 'next/link'
-import NewsCard from '@/components/NewsCard'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import SourceFilter from '@/components/SourceFilter'
 import Logo from '@/components/Logo'
-import { NewsArticle } from '@/lib/supabase'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
-export default function Home() {
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date())
-  const [isScrapingInitial, setIsScrapingInitial] = useState(true)
-  const [selectedSources, setSelectedSources] = useState<string[]>([
-    'CoinDesk', 'The Block', 'Reddit', 'Cointelegraph', 'CryptoPotato', 'Paradigm', 'a16z Crypto', 'Messari'
-  ])
-
-  // Fetch news with auto-refresh every 10 seconds
-  const { data, error, isLoading, mutate } = useSWR(
-    '/api/news',
-    fetcher,
+export default function HomePage() {
+  const categories = [
     {
-      refreshInterval: 10000, // Refresh every 10 seconds
-      revalidateOnFocus: true,
-      onSuccess: () => {
-        setLastRefreshed(new Date())
-      }
+      title: 'Crypto',
+      description: 'Stay updated with the latest in cryptocurrency and blockchain',
+      href: '/crypto',
+      emoji: '₿',
+      gradient: 'from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20',
+      border: 'border-blue-500/20 hover:border-blue-500/40'
+    },
+    {
+      title: 'AI',
+      description: 'Discover the cutting edge of artificial intelligence',
+      href: '/ai',
+      emoji: '🤖',
+      gradient: 'from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20',
+      border: 'border-purple-500/20 hover:border-purple-500/40'
+    },
+    {
+      title: 'Product',
+      description: 'Learn from the best in product management and design',
+      href: '/product',
+      emoji: '🚀',
+      gradient: 'from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20',
+      border: 'border-orange-500/20 hover:border-orange-500/40'
     }
-  )
-
-  // Initial scrape on mount
-  useEffect(() => {
-    const initialScrape = async () => {
-      try {
-        await fetch('/api/scrape', { method: 'POST' })
-        setIsScrapingInitial(false)
-        mutate() // Refresh the news data
-      } catch (error) {
-        console.error('Initial scrape failed:', error)
-        setIsScrapingInitial(false)
-      }
-    }
-
-    initialScrape()
-  }, [mutate])
-
-  // Periodic scraping every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        await fetch('/api/scrape', { method: 'POST' })
-        mutate() // Refresh the news data
-      } catch (error) {
-        console.error('Periodic scrape failed:', error)
-      }
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [mutate])
-
-  const allArticles: NewsArticle[] = data?.data || []
-  const articles = allArticles.filter(article => selectedSources.includes(article.source))
+  ]
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 dark:from-black dark:via-gray-950 dark:to-gray-900 shadow-lg border-b border-gray-700 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Logo className="w-10 h-10" />
-              <div>
-                <h1 className="font-serif text-4xl font-semibold text-white">
-                  Niminal
-                </h1>
-                <p className="text-sm text-slate-200 mt-1">
-                  News without the noise.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Link
-                href="/"
-                className="px-3 py-1.5 text-xs font-medium text-white bg-white/20 border border-slate-400/30 rounded-md"
-              >
-                Crypto
-              </Link>
-              <Link
-                href="/ai"
-                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
-              >
-                AI
-              </Link>
-              <Link
-                href="/product"
-                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
-              >
-                Product
-              </Link>
-              <Link
-                href="/about"
-                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
-              >
-                About
-              </Link>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Source Filter */}
-        <SourceFilter onFilterChange={setSelectedSources} />
-
-        {isScrapingInitial && allArticles.length === 0 ? (
-          <div className="space-y-6">
-            <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
-              Fetching latest articles...
-            </p>
-            {/* Skeleton loading - list style */}
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 divide-y divide-slate-200 dark:divide-slate-700">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="p-4 animate-pulse">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
-                    <div className="h-4 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
-                  </div>
-                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full" />
-                </div>
-              ))}
-            </div>
+      <main className="flex flex-col items-center justify-center min-h-screen px-4 py-12">
+        {/* Logo and Brand */}
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <Logo className="w-16 h-16" />
           </div>
-        ) : error ? (
-          <div className="text-center py-20">
-            <p className="text-red-600 dark:text-red-400">
-              Failed to load news. Please check your Supabase configuration.
-            </p>
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-slate-600 dark:text-slate-400">
-              No news articles found. The scraper will fetch new articles shortly.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {/* Featured row - 2 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles.slice(0, 2).map((article) => (
-                <NewsCard key={article.id} article={article} featured />
-              ))}
-            </div>
-
-            {/* Regular articles - 3 columns */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.slice(2).map((article) => (
-                <NewsCard key={article.id} article={article} />
-              ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-            Updates every 10 seconds • 8 Sources • Max 3 articles per source
+          <h1 className="font-serif text-6xl font-semibold text-slate-900 dark:text-white mb-4">
+            Niminal
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            News without the noise.
           </p>
         </div>
-      </footer>
+
+        {/* Category Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full">
+          {categories.map((category) => (
+            <Link
+              key={category.href}
+              href={category.href}
+              className={`group relative bg-white dark:bg-slate-900 rounded-2xl p-8 border-2 ${category.border} bg-gradient-to-br ${category.gradient} transition-all duration-300 hover:shadow-lg hover:-translate-y-1`}
+            >
+              <div className="text-5xl mb-4">{category.emoji}</div>
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-2">
+                {category.title}
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                {category.description}
+              </p>
+              <div className="mt-6 flex items-center text-sm font-medium text-slate-700 dark:text-slate-300">
+                Explore
+                <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* About Link */}
+        <div className="mt-12">
+          <Link
+            href="/about"
+            className="text-sm text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          >
+            About Niminal
+          </Link>
+        </div>
+      </main>
     </div>
   )
 }
