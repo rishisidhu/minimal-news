@@ -516,3 +516,71 @@ The application is now fully rebranded as Niminal with a distinctive N lettermar
 
 ### Result
 Niminal now has three content sections - Crypto, AI, and Product - each with dedicated sources, scrapers, and filtering. The application provides comprehensive coverage across technology domains with consistent UX patterns.
+
+---
+
+## 📝 SESSION 14: Product Page Sources, Card Size & Loading UX
+
+### Summary of Changes
+
+**1. Product Page Source Overhaul**
+Multiple iterations to find reliable, fast-loading sources with good content:
+- Removed slow blog scrapers (Product School, SVPG, etc.)
+- Tried Reddit product subreddits (removed - poor content quality)
+- Tried Product Hunt (removed - requires API authentication)
+- Tried a16z essays (removed - scraping issues)
+- **Final sources: Hacker News, First Round Review, Product School**
+
+**2. Hacker News Scraper Improvements**
+- Fetches meta descriptions from article pages for better excerpts
+- Falls back to "X points • Y comments" when meta fetch fails
+- Uses HN Firebase API for fast story retrieval
+- Increased excerpt length from 500 to 1000 characters
+
+**3. Created New Scrapers**
+- `lib/scrapers/firstround.ts` - First Round Review VC essays
+- `lib/scrapers/productschool.ts` - Product School blog articles
+- Both fetch OG meta tags from individual article pages for reliable titles, excerpts, and images
+
+**4. Card Size & Text Length Increases**
+- Word limit: 200 → 300 words in truncateToWords function
+- Featured card line clamp: 12 → 16 lines
+- Regular card line clamp: 10 → 14 lines
+- Excerpt length in scrapers: 500 → 1000 characters
+
+**5. Loading UX Overhaul**
+Replaced spinning circles with skeleton loading cards on all 3 pages:
+- Crypto page: 6 skeleton cards in grid layout
+- AI page: 6 skeleton cards in grid layout
+- Product page: 1 featured skeleton + 3 regular skeletons
+- Shows "Fetching latest articles..." text
+- Skeleton cards pulse/shimmer with animate-pulse
+- Matches actual card layout for seamless transition
+
+### Files Created (2 files)
+1. `lib/scrapers/firstround.ts` - First Round Review scraper
+2. `lib/scrapers/productschool.ts` - Product School scraper
+
+### Files Modified (8 files)
+1. `app/api/scrape-product/route.ts` - Updated to use HN, First Round, Product School
+2. `app/api/news-product/route.ts` - Updated PRODUCT_SOURCES array
+3. `app/product/page.tsx` - Updated sources, added skeleton loading
+4. `app/page.tsx` - Added skeleton loading cards
+5. `app/ai/page.tsx` - Added skeleton loading cards
+6. `components/NewsCard.tsx` - Increased word limit and line clamps, added source colors
+7. `lib/scrapers/hackernews.ts` - Increased excerpt length to 1000 chars
+8. `lib/scrapers/reddit.ts` - Increased excerpt length to 1000 chars
+
+### Technical Notes
+- First Round and Product School scrapers fetch OG meta tags from each article page
+- This provides reliable titles, descriptions (150+ words), and images
+- Skeleton loading uses Tailwind's animate-pulse for shimmer effect
+- Product page skeletons mirror the featured + regular card layout
+- HN scraper makes parallel requests to article URLs for meta descriptions
+
+### Source Colors Added
+- First Round: teal-600
+- Product School: violet-600
+
+### Result
+Product page now loads faster with reliable sources and shows substantially more text per article. The skeleton loading provides a polished, less irritating loading experience across all three pages. Users see placeholder cards that match the final layout, making the wait feel shorter.
