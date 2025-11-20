@@ -11,14 +11,9 @@ import { NewsArticle } from '@/lib/supabase'
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 const AI_SOURCES = [
-  'OpenAI',
-  'MIT Tech Review',
   'TechCrunch',
   'Wired',
   'VentureBeat',
-  'DeepMind',
-  'Meta AI',
-  'NVIDIA',
   'Hugging Face',
 ]
 
@@ -103,22 +98,28 @@ export default function AINews() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <Link
                 href="/"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 Crypto
               </Link>
               <Link
+                href="/ai"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-white/20 border border-slate-400/30 rounded-md"
+              >
+                AI
+              </Link>
+              <Link
                 href="/product"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 Product
               </Link>
               <Link
                 href="/about"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 About
               </Link>
@@ -169,23 +170,16 @@ export default function AINews() {
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...
             </p>
-            {/* Skeleton loading cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Skeleton loading - list style */}
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 divide-y divide-slate-200 dark:divide-slate-700">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
-                  <div className="h-32 bg-slate-200 dark:bg-slate-700" />
-                  <div className="p-4 space-y-3">
-                    <div className="flex gap-2">
-                      <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
-                      <div className="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
-                    </div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                    <div className="space-y-2">
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
-                    </div>
+                <div key={i} className="p-4 animate-pulse">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+                    <div className="h-4 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
                   </div>
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full" />
                 </div>
               ))}
             </div>
@@ -204,14 +198,16 @@ export default function AINews() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Featured Article */}
-            {articles[0] && (
-              <NewsCard article={articles[0]} featured />
-            )}
+            {/* Featured row - 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {articles.slice(0, 2).map((article) => (
+                <NewsCard key={article.id} article={article} featured />
+              ))}
+            </div>
 
-            {/* Regular Articles */}
-            <div className="space-y-4">
-              {articles.slice(1).map((article) => (
+            {/* Regular articles - 3 columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.slice(2).map((article) => (
                 <NewsCard key={article.id} article={article} />
               ))}
             </div>

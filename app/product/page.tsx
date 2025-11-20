@@ -104,22 +104,28 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <Link
                 href="/"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 Crypto
               </Link>
               <Link
                 href="/ai"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 AI
               </Link>
               <Link
+                href="/product"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-white/20 border border-slate-400/30 rounded-md"
+              >
+                Product
+              </Link>
+              <Link
                 href="/about"
-                className="px-4 py-2 text-sm font-medium text-white border border-slate-400/30 rounded-lg hover:bg-white/10 hover:border-slate-300/50 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white border border-slate-400/30 rounded-md hover:bg-white/10 hover:border-slate-300/50 transition-colors"
               >
                 About
               </Link>
@@ -172,39 +178,16 @@ export default function ProductPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Fetching latest articles...
             </p>
-            {/* Skeleton loading cards */}
-            <div className="space-y-4">
-              {/* Featured skeleton */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse">
-                <div className="h-64 bg-slate-200 dark:bg-slate-700" />
-                <div className="p-4 space-y-3">
-                  <div className="flex gap-2">
-                    <div className="h-6 w-24 bg-slate-200 dark:bg-slate-700 rounded-full" />
-                    <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+            {/* Skeleton loading - list style */}
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 divide-y divide-slate-200 dark:divide-slate-700">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="p-4 animate-pulse">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded" />
+                    <div className="h-4 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
                   </div>
-                  <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                  <div className="space-y-2">
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
-                  </div>
-                </div>
-              </div>
-              {/* Regular skeletons */}
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 animate-pulse flex">
-                  <div className="w-1/3 bg-slate-200 dark:bg-slate-700" />
-                  <div className="p-4 space-y-3 flex-1">
-                    <div className="flex gap-2">
-                      <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
-                      <div className="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
-                    </div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                    <div className="space-y-2">
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded" />
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
-                    </div>
-                  </div>
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full" />
                 </div>
               ))}
             </div>
@@ -214,15 +197,17 @@ export default function ProductPage() {
             <p className="text-slate-600 dark:text-slate-400">No articles found. Try selecting more sources.</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Featured Article */}
-            {filteredArticles[0] && (
-              <NewsCard article={filteredArticles[0]} featured />
-            )}
+          <div className="space-y-8">
+            {/* Featured row - 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredArticles.slice(0, 2).map((article) => (
+                <NewsCard key={article.id || article.article_url} article={article} featured />
+              ))}
+            </div>
 
-            {/* Regular Articles */}
-            <div className="space-y-4">
-              {filteredArticles.slice(1).map((article) => (
+            {/* Regular articles - 3 columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredArticles.slice(2).map((article) => (
                 <NewsCard key={article.id || article.article_url} article={article} />
               ))}
             </div>

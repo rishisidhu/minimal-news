@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Source_Sans_3, Merriweather } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Analytics } from '@vercel/analytics/react';
 import AmbientPlayer from '@/components/AmbientPlayer';
 import "./globals.css";
 
-const sourceSans = Source_Sans_3({ subsets: ['latin'], variable: '--font-source-sans' });
-const merriweather = Merriweather({
-  weight: ['300', '400', '700'],
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-merriweather'
+  variable: '--font-inter',
+  display: 'swap'
 });
 
 export const metadata: Metadata = {
@@ -23,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sourceSans.variable} ${merriweather.variable}`} suppressHydrationWarning>
-      <body className="antialiased font-sans">
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="antialiased font-sans" style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif' }}>
         <ThemeProvider>
           {children}
         </ThemeProvider>

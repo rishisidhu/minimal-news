@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase, NewsArticle } from '@/lib/supabase'
 
 const AI_SOURCES = [
-  'OpenAI', 'MIT Tech Review', 'TechCrunch', 'Wired', 'VentureBeat',
-  'DeepMind', 'Meta AI', 'NVIDIA', 'Hugging Face'
+  'TechCrunch', 'Wired', 'VentureBeat', 'Hugging Face'
 ]
 
 export async function GET(request: Request) {

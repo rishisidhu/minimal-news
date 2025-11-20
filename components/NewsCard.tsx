@@ -10,188 +10,133 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ article, featured = false }: NewsCardProps) {
-  const getSourceColor = (source: string) => {
+  // Returns color for the small dot indicator
+  const getDotColor = (source: string) => {
     switch (source) {
       // Crypto sources
       case 'CoinDesk':
-        return 'bg-blue-600 dark:bg-blue-700'
+        return 'bg-blue-500'
       case 'The Block':
-        return 'bg-black dark:bg-gray-900'
+        return 'bg-slate-700 dark:bg-slate-400'
       case 'Reddit':
-        return 'bg-orange-600 dark:bg-orange-700'
+        return 'bg-orange-500'
       case 'Cointelegraph':
-        return 'bg-yellow-600 dark:bg-yellow-700'
+        return 'bg-yellow-500'
       case 'CryptoPotato':
-        return 'bg-green-600 dark:bg-green-700'
+        return 'bg-green-500'
       case 'Paradigm':
-        return 'bg-purple-600 dark:bg-purple-700'
+        return 'bg-purple-500'
       case 'a16z Crypto':
-        return 'bg-red-600 dark:bg-red-700'
+        return 'bg-red-500'
       case 'Messari':
-        return 'bg-cyan-600 dark:bg-cyan-700'
+        return 'bg-cyan-500'
       // AI sources
       case 'OpenAI':
-        return 'bg-emerald-600 dark:bg-emerald-700'
+        return 'bg-emerald-500'
       case 'MIT Tech Review':
-        return 'bg-red-600 dark:bg-red-700'
+        return 'bg-red-500'
       case 'TechCrunch':
-        return 'bg-green-600 dark:bg-green-700'
+        return 'bg-green-500'
       case 'Wired':
-        return 'bg-black dark:bg-gray-900'
+        return 'bg-slate-700 dark:bg-slate-400'
       case 'VentureBeat':
-        return 'bg-blue-600 dark:bg-blue-700'
+        return 'bg-blue-500'
       case 'DeepMind':
-        return 'bg-indigo-600 dark:bg-indigo-700'
+        return 'bg-indigo-500'
       case 'Meta AI':
-        return 'bg-blue-500 dark:bg-blue-600'
+        return 'bg-blue-400'
       case 'NVIDIA':
-        return 'bg-lime-600 dark:bg-lime-700'
+        return 'bg-lime-500'
       case 'Hugging Face':
-        return 'bg-yellow-500 dark:bg-yellow-600'
+        return 'bg-yellow-400'
       // Product sources
       case 'r/ProductManagement':
-        return 'bg-orange-600 dark:bg-orange-700'
+        return 'bg-orange-500'
       case 'r/UserExperience':
-        return 'bg-orange-500 dark:bg-orange-600'
+        return 'bg-orange-400'
       case 'r/UXDesign':
-        return 'bg-orange-400 dark:bg-orange-500'
+        return 'bg-orange-400'
       case 'Hacker News':
-        return 'bg-amber-600 dark:bg-amber-700'
+        return 'bg-amber-500'
       case 'Product Hunt':
-        return 'bg-red-500 dark:bg-red-600'
+        return 'bg-red-500'
       case 'a16z':
-        return 'bg-red-600 dark:bg-red-700'
+        return 'bg-red-500'
       case 'First Round':
-        return 'bg-teal-600 dark:bg-teal-700'
+        return 'bg-teal-500'
       case 'Product School':
-        return 'bg-violet-600 dark:bg-violet-700'
+        return 'bg-violet-500'
       case 'IndieHackers':
-        return 'bg-blue-600 dark:bg-blue-700'
+        return 'bg-blue-500'
       default:
-        return 'bg-slate-600 dark:bg-slate-700'
+        return 'bg-slate-500'
     }
   }
 
-  // Truncate to 200 words or nearest complete sentence
+  // Truncate to specified number of words
   const truncateToWords = (text: string, maxWords: number): string => {
     const words = text.split(/\s+/)
     if (words.length <= maxWords) return text
 
-    // Get first maxWords words
     const truncated = words.slice(0, maxWords).join(' ')
-
-    // Find nearest sentence end after truncation point
     const sentenceEnd = text.indexOf('.', truncated.length)
-    if (sentenceEnd !== -1 && sentenceEnd - truncated.length < 150) {
-      // If there's a period within 150 chars, use it
+    if (sentenceEnd !== -1 && sentenceEnd - truncated.length < 100) {
       return text.substring(0, sentenceEnd + 1)
     }
 
     return truncated + '...'
   }
 
-  const truncatedExcerpt = truncateToWords(article.excerpt, 300)
+  // More text for excerpts
+  const truncatedExcerpt = truncateToWords(article.excerpt, featured ? 80 : 50)
 
-  if (featured) {
-    return (
-      <div className="relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-600 group">
-        {article.image_url && (
-          <div className="relative w-full h-64 bg-gray-100 dark:bg-gray-700">
-            <Image
-              src={article.image_url}
-              alt={article.title}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              unoptimized
-              priority
-            />
-          </div>
-        )}
-
-        <div className="p-4 relative">
-          <div className="flex items-center gap-2 mb-2">
-            <span className={`${getSourceColor(article.source)} text-white text-xs font-semibold px-2 py-1 rounded-full uppercase tracking-wide`}>
-              {article.source}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {formatDistanceToNow(new Date(article.created_at || article.published_at), { addSuffix: true })}
-            </span>
-          </div>
-
-          <h2 className="font-serif text-base font-semibold mb-2 text-slate-900 dark:text-slate-100 leading-tight">
-            {article.title}
-          </h2>
-
-          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-16 mb-4">
-            {truncatedExcerpt}
-          </p>
-
-          <a
-            href={article.article_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
-          >
-            Read Article
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    )
-  }
-
+  // Card layout: image + title on top, excerpt below, source at bottom
   return (
-    <div className="relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group hover:border-amber-500 dark:hover:border-amber-600">
-      <div className="flex flex-col sm:flex-row">
-        {/* Image Section */}
-        {article.image_url && (
-          <div className="relative w-full sm:w-1/3 h-32 sm:h-auto bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-            <Image
-              src={article.image_url}
-              alt={article.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 40vw"
-              unoptimized
-            />
-          </div>
-        )}
+    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm">
+      <div className="p-5">
+        {/* Top row: Thumbnail + Title */}
+        <div className="flex items-start gap-3 mb-3">
+          {/* Small thumbnail */}
+          {article.image_url ? (
+            <div className={`relative flex-shrink-0 ${featured ? 'w-14 h-14' : 'w-10 h-10'} rounded-md overflow-hidden bg-slate-100 dark:bg-slate-800`}>
+              <Image
+                src={article.image_url}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="56px"
+              />
+            </div>
+          ) : (
+            <div className={`flex-shrink-0 ${featured ? 'w-14 h-14' : 'w-10 h-10'} rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center`}>
+              <span className="text-slate-400 dark:text-slate-500 text-xs font-medium">
+                {article.source.substring(0, 2).toUpperCase()}
+              </span>
+            </div>
+          )}
 
-        {/* Content Section */}
-        <div className="p-3 sm:p-4 flex-1 relative">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className={`${getSourceColor(article.source)} text-white text-xs font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide`}>
-              {article.source}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {formatDistanceToNow(new Date(article.created_at || article.published_at), { addSuffix: true })}
-            </span>
-          </div>
-
-          <h3 className="font-serif text-sm font-semibold mb-1.5 text-slate-900 dark:text-slate-100 leading-tight line-clamp-2">
-            {article.title}
+          {/* Title next to image */}
+          <h3 className={`flex-1 font-medium text-slate-900 dark:text-slate-100 leading-snug ${featured ? 'text-base line-clamp-2' : 'text-sm line-clamp-2'}`}>
+            <a href={article.article_url} target="_blank" rel="noopener noreferrer" className="hover:underline decoration-slate-300 dark:decoration-slate-600">
+              {article.title}
+            </a>
           </h3>
+        </div>
 
-          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed line-clamp-14 mb-3">
-            {truncatedExcerpt}
-          </p>
+        {/* Excerpt */}
+        <p className={`text-slate-600 dark:text-slate-400 leading-relaxed mb-3 ${featured ? 'text-sm line-clamp-4' : 'text-xs line-clamp-3'}`}>
+          {truncatedExcerpt}
+        </p>
 
-          <a
-            href={article.article_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
-          >
-            Read Article
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
+        {/* Source at bottom - subtle with colored underline */}
+        <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+          <span className="flex items-center gap-1">
+            <span className={`w-1 h-3 rounded-full ${getDotColor(article.source)}`} />
+            <span>{article.source}</span>
+          </span>
+          <span>{formatDistanceToNow(new Date(article.created_at || article.published_at), { addSuffix: true })}</span>
         </div>
       </div>
-    </div>
+    </article>
   )
 }

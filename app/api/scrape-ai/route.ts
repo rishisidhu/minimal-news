@@ -1,18 +1,12 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { scrapeOpenAI } from '@/lib/scrapers/openai'
-import { scrapeMITTechReview } from '@/lib/scrapers/mit-tech-review'
 import { scrapeTechCrunchAI } from '@/lib/scrapers/techcrunch-ai'
 import { scrapeWiredAI } from '@/lib/scrapers/wired-ai'
 import { scrapeVentureBeatAI } from '@/lib/scrapers/venturebeat-ai'
-import { scrapeDeepMind } from '@/lib/scrapers/deepmind'
-import { scrapeMetaAI } from '@/lib/scrapers/meta-ai'
-import { scrapeNvidiaAI } from '@/lib/scrapers/nvidia-ai'
 import { scrapeHuggingFace } from '@/lib/scrapers/huggingface'
 
 const AI_SOURCES = [
-  'OpenAI', 'MIT Tech Review', 'TechCrunch', 'Wired', 'VentureBeat',
-  'DeepMind', 'Meta AI', 'NVIDIA', 'Hugging Face'
+  'TechCrunch', 'Wired', 'VentureBeat', 'Hugging Face'
 ]
 
 export async function POST() {
@@ -33,36 +27,21 @@ export async function POST() {
 
     // Scrape all AI sources in parallel
     const [
-      openaiArticles,
-      mitTechReviewArticles,
       techcrunchArticles,
       wiredArticles,
       venturebeatArticles,
-      deepmindArticles,
-      metaAiArticles,
-      nvidiaArticles,
       huggingfaceArticles
     ] = await Promise.all([
-      scrapeOpenAI(),
-      scrapeMITTechReview(),
       scrapeTechCrunchAI(),
       scrapeWiredAI(),
       scrapeVentureBeatAI(),
-      scrapeDeepMind(),
-      scrapeMetaAI(),
-      scrapeNvidiaAI(),
       scrapeHuggingFace(),
     ])
 
     const allArticles = [
-      ...openaiArticles,
-      ...mitTechReviewArticles,
       ...techcrunchArticles,
       ...wiredArticles,
       ...venturebeatArticles,
-      ...deepmindArticles,
-      ...metaAiArticles,
-      ...nvidiaArticles,
       ...huggingfaceArticles
     ]
 
@@ -86,14 +65,9 @@ export async function POST() {
       success: true,
       message: `Scraped ${allArticles.length} AI articles. Upserted: ${upsertedCount}`,
       stats: {
-        openai: openaiArticles.length,
-        mitTechReview: mitTechReviewArticles.length,
         techcrunch: techcrunchArticles.length,
         wired: wiredArticles.length,
         venturebeat: venturebeatArticles.length,
-        deepmind: deepmindArticles.length,
-        metaAi: metaAiArticles.length,
-        nvidia: nvidiaArticles.length,
         huggingface: huggingfaceArticles.length,
       }
     })

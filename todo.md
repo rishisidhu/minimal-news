@@ -584,3 +584,108 @@ Replaced spinning circles with skeleton loading cards on all 3 pages:
 
 ### Result
 Product page now loads faster with reliable sources and shows substantially more text per article. The skeleton loading provides a polished, less irritating loading experience across all three pages. Users see placeholder cards that match the final layout, making the wait feel shorter.
+
+---
+
+## 📝 SESSION 15: Analytics, Ambient Music, Design Overhaul
+
+### Summary of Changes
+
+**1. Vercel Analytics**
+- Installed `@vercel/analytics` package
+- Added Analytics component to app/layout.tsx
+- Tracks page views and web vitals automatically
+
+**2. Ambient Music Player**
+- Created `components/AmbientPlayer.tsx`
+- Mute/unmute toggle button in bottom-left corner
+- 10% volume, loops ambient.mp3
+- Saves preference to localStorage
+- Starts muted (browser auto-play restrictions)
+- User needs to add `public/audio/ambient.mp3` file
+
+**3. AI Sources Reduction**
+- Removed 5 AI sources: NVIDIA, OpenAI, MIT Tech Review, DeepMind, Meta AI
+- Kept 4 sources: TechCrunch, Wired, VentureBeat, Hugging Face
+- Updated scrape-ai route and news-ai route
+
+**4. Complete Design Overhaul - List View**
+Converted from card-based to clean list-style layout:
+- Removed all images from NewsCard
+- Horizontal rows with border dividers
+- Source badge, title, time, read link
+- 2-line excerpt (100 words max)
+- Hover effects on rows and titles
+- Similar to Hacker News - scannable, text-focused
+
+**5. Page Layout Updates**
+All 3 pages updated to work with list view:
+- Single-column layout in white container
+- Rounded corners with border
+- Updated skeleton loading to match list style
+
+**6. TypeScript Fix**
+- Fixed build error in hackernews.ts
+- Changed `image_url: null` to `image_url: null as string | null`
+
+### Files Created (1 file)
+1. `components/AmbientPlayer.tsx` - Audio player with mute toggle
+
+### Files Modified (7 files)
+1. `app/layout.tsx` - Added Analytics and AmbientPlayer
+2. `components/NewsCard.tsx` - Complete rewrite to list view design
+3. `app/page.tsx` - Updated to list container layout
+4. `app/ai/page.tsx` - Updated to list container layout, reduced sources
+5. `app/product/page.tsx` - Updated to list container layout
+6. `app/api/scrape-ai/route.ts` - Removed 5 AI scrapers
+7. `app/api/news-ai/route.ts` - Updated AI_SOURCES array
+8. `lib/scrapers/hackernews.ts` - TypeScript type assertion fix
+
+### Technical Notes
+- List view uses `border-b` dividers with `last:border-b-0`
+- Container uses `px-4` with negative margin `-mx-4` on rows for edge-to-edge hover
+- Excerpt truncated to 100 words with `line-clamp-2`
+- Analytics automatically tracks without configuration
+- Ambient player respects browser auto-play policies
+
+### Result
+Niminal now has a clean, text-focused list view similar to Hacker News. The design is less cluttered, more scannable, and information-dense. Vercel Analytics provides traffic insights, and optional ambient music adds a relaxing touch. The AI section is streamlined with 4 reliable sources.
+
+---
+
+## 📝 SESSION 15 (Continued): Design Refinements
+
+### Summary of Changes
+
+**1. Apple-like Clean Look**
+- Removed card borders, replaced with subtle shadow (`shadow-sm`)
+- Increased border radius (`rounded-lg` → `rounded-xl`)
+- Increased internal padding (`p-4` → `p-5`)
+- Increased grid gaps (`gap-4` → `gap-6`)
+- More spacing between featured and regular sections (`space-y-6` → `space-y-8`)
+
+**2. Consistent Navigation**
+- All pages now show same 4 buttons: Crypto, AI, Product, About
+- Active page highlighted with `bg-white/20` background
+- Users can always see which page they're on
+
+**3. Compact Navigation Buttons**
+- Smaller padding (`px-4 py-2` → `px-3 py-1.5`)
+- Smaller text (`text-sm` → `text-xs`)
+- Smaller border radius (`rounded-lg` → `rounded-md`)
+- Tighter button spacing (`gap-4` → `gap-2`)
+
+### Files Modified (4 files)
+1. `components/NewsCard.tsx` - Removed borders, added shadow, increased padding
+2. `app/page.tsx` - Consistent nav, compact buttons, increased gaps
+3. `app/ai/page.tsx` - Consistent nav, compact buttons, increased gaps
+4. `app/product/page.tsx` - Consistent nav, compact buttons, increased gaps
+
+### Technical Notes
+- Cards use `shadow-sm` instead of borders for cleaner separation
+- Active nav button has `bg-white/20` without hover effects
+- Inactive buttons keep hover effects for interactivity
+- Grid gaps and section spacing create more breathing room
+
+### Result
+The design now feels more spacious and refined with an Apple-like aesthetic. Navigation is consistent across all pages with clear active state indication. The compact buttons are more elegant and don't dominate the header.
