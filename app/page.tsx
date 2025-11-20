@@ -43,15 +43,15 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="relative flex flex-col items-center justify-center min-h-screen px-4 py-16">
         {/* Logo and Brand */}
-        <div className="text-center mb-24">
-          <div className="flex justify-center mb-10">
-            <Logo className="w-16 h-16 opacity-80" />
+        <div className="text-center mb-16 sm:mb-20 md:mb-24">
+          <div className="flex justify-center mb-6 sm:mb-8 md:mb-10">
+            <Logo className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 opacity-80" />
           </div>
-          <h1 className="font-serif text-8xl font-extralight tracking-wider text-black dark:text-white mb-8" style={{ letterSpacing: '0.15em' }}>
-            NIMINAL
+          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extralight tracking-wider text-black dark:text-white mb-6 sm:mb-7 md:mb-8 px-4" style={{ letterSpacing: '0.08em' }}>
+            <span className="sm:tracking-[0.10em] md:tracking-[0.12em] lg:tracking-[0.15em]">NIMINAL</span>
           </h1>
-          <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-black/30 dark:via-white/30 to-transparent mb-8" />
-          <p className="text-sm tracking-[0.3em] text-black/60 dark:text-white/40 font-light uppercase">
+          <div className="h-px w-24 sm:w-28 md:w-32 mx-auto bg-gradient-to-r from-transparent via-black/30 dark:via-white/30 to-transparent mb-6 sm:mb-7 md:mb-8" />
+          <p className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] text-black/60 dark:text-white/40 font-light uppercase px-4">
             News Without The Noise
           </p>
         </div>
