@@ -56,10 +56,17 @@ export async function POST() {
 
     console.log(`💾 Upserting ${allArticles.length} articles to database...`)
 
+    // Add updated_at timestamp to all articles
+    const now = new Date().toISOString()
+    const articlesWithTimestamp = allArticles.map(article => ({
+      ...article,
+      updated_at: now
+    }))
+
     // Batch upsert instead of sequential (faster and avoids timeout)
     const { error: upsertError, count } = await supabaseAdmin
       .from('news_articles')
-      .upsert(allArticles, { onConflict: 'article_url', count: 'exact' })
+      .upsert(articlesWithTimestamp, { onConflict: 'article_url', count: 'exact' })
 
     if (upsertError) {
       console.error('❌ Error upserting articles:', upsertError)

@@ -47,11 +47,12 @@ export async function POST() {
 
     // Upsert articles into Supabase
     let upsertedCount = 0
+    const now = new Date().toISOString()
 
     for (const article of allArticles) {
       const { error } = await supabaseAdmin
         .from('news_articles')
-        .upsert(article, { onConflict: 'article_url' })
+        .upsert({ ...article, updated_at: now }, { onConflict: 'article_url' })
         .select()
 
       if (error) {
