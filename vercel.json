@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/scrape-crypto",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/scrape-ai",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/scrape-product",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
