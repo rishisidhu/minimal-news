@@ -20,7 +20,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json())
 export default function ProductPage() {
   const [selectedSources, setSelectedSources] = useState<string[]>(PRODUCT_SOURCES)
 
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     '/api/news-product',
     fetcher,
     {
@@ -32,6 +32,20 @@ export default function ProductPage() {
   useEffect(() => {
     prefetchOtherNews('product')
   }, [])
+
+  // Periodic scraping - trigger scrape every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        await fetch('/api/scrape-product', { method: 'POST' })
+        mutate() // Refresh the data after scraping
+      } catch (error) {
+        console.error('Periodic scrape failed:', error)
+      }
+    }, 5 * 60 * 1000) // 5 minutes
+
+    return () => clearInterval(interval)
+  }, [mutate])
 
   const toggleAll = () => {
     const newSelected = selectedSources.length === PRODUCT_SOURCES.length

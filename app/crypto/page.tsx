@@ -36,6 +36,20 @@ export default function Home() {
     prefetchOtherNews('crypto')
   }, [])
 
+  // Periodic scraping - trigger scrape every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        await fetch('/api/scrape', { method: 'POST' })
+        mutate() // Refresh the data after scraping
+      } catch (error) {
+        console.error('Periodic scrape failed:', error)
+      }
+    }, 5 * 60 * 1000) // 5 minutes
+
+    return () => clearInterval(interval)
+  }, [mutate])
+
   const allArticles: NewsArticle[] = data?.data || []
   const articles = allArticles.filter(article => selectedSources.includes(article.source))
 
