@@ -36,20 +36,6 @@ export default function AINews() {
     prefetchOtherNews('ai')
   }, [])
 
-  // Periodic scraping - trigger scrape every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        await fetch('/api/scrape-ai', { method: 'POST' })
-        mutate() // Refresh the data after scraping
-      } catch (error) {
-        console.error('Periodic scrape failed:', error)
-      }
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [mutate])
-
   const toggleAll = () => {
     const newSelected = selectedSources.length === AI_SOURCES.length
       ? [AI_SOURCES[0]]

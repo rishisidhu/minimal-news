@@ -33,20 +33,6 @@ export default function ProductPage() {
     prefetchOtherNews('product')
   }, [])
 
-  // Periodic scraping - trigger scrape every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        await fetch('/api/scrape-product', { method: 'POST' })
-        mutate() // Refresh the data after scraping
-      } catch (error) {
-        console.error('Periodic scrape failed:', error)
-      }
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [mutate])
-
   const toggleAll = () => {
     const newSelected = selectedSources.length === PRODUCT_SOURCES.length
       ? [PRODUCT_SOURCES[0]]
