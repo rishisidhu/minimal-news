@@ -32,7 +32,8 @@ export async function GET(request: Request) {
 
     // Group by source and limit to maxPerSource per source
     const groupedBySource: { [key: string]: NewsArticle[] } = {}
-    for (const article of data || []) {
+    const articles = (data || []) as NewsArticle[]
+    for (const article of articles) {
       if (!groupedBySource[article.source]) {
         groupedBySource[article.source] = []
       }
