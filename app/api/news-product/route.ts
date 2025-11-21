@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     // Flatten and sort by time
     const limitedData = Object.values(groupedBySource)
       .flat()
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .sort((a, b) => new Date(b.created_at || b.published_at).getTime() - new Date(a.created_at || a.published_at).getTime())
 
     return NextResponse.json({
       success: true,
