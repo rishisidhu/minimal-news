@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin, NewsArticle } from '@/lib/supabase'
+import { selectArticles } from '@/lib/article-selector'
 
 const PRODUCT_SOURCES = [
   'Hacker News',
@@ -30,22 +31,31 @@ export async function GET(request: Request) {
       )
     }
 
-    // Group by source and limit to maxPerSource per source
+    // Group articles by source first
     const groupedBySource: { [key: string]: NewsArticle[] } = {}
     const articles = (data || []) as NewsArticle[]
     for (const article of articles) {
       if (!groupedBySource[article.source]) {
         groupedBySource[article.source] = []
       }
-      if (groupedBySource[article.source].length < maxPerSource) {
-        groupedBySource[article.source].push(article)
-      }
+      groupedBySource[article.source].push(article)
     }
 
-    // Flatten and sort by time
-    const limitedData = Object.values(groupedBySource)
-      .flat()
-      .sort((a, b) => new Date(b.updated_at || b.published_at).getTime() - new Date(a.updated_at || a.published_at).getTime())
+    // Apply smart selection to each source, then limit per source
+    const limitedArticles: NewsArticle[] = []
+    for (const source in groupedBySource) {
+      const sourceArticles = groupedBySource[source]
+      // Use smart selector to get best mix for this source
+      const selected = selectArticles(sourceArticles, maxPerSource * 3)
+      // Then limit to maxPerSource
+      limitedArticles.push(...selected.slice(0, maxPerSource))
+    }
+
+    // Sort by time (newest first)
+    const limitedData = limitedArticles.sort((a, b) =>
+      new Date(b.updated_at || b.published_at).getTime() -
+      new Date(a.updated_at || a.published_at).getTime()
+    )
 
     return NextResponse.json({
       success: true,

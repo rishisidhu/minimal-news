@@ -46,4 +46,6 @@ export interface NewsArticle {
   published_at: string
   created_at?: string
   updated_at?: string
+  scrape_batch_id?: string
+  scrape_batch_time?: string
 }

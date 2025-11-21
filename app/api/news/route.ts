@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, NewsArticle } from '@/lib/supabase'
+import { selectArticles } from '@/lib/article-selector'
 
 export async function GET(request: Request) {
   try {
@@ -23,19 +24,24 @@ export async function GET(request: Request) {
       )
     }
 
-    // Limit to maxPerSource articles per source
+    // Group articles by source first
     const articlesBySource: { [key: string]: NewsArticle[] } = {}
-    const limitedArticles: NewsArticle[] = []
-
     for (const article of (data || [])) {
       const source = article.source
       if (!articlesBySource[source]) {
         articlesBySource[source] = []
       }
-      if (articlesBySource[source].length < maxPerSource) {
-        articlesBySource[source].push(article)
-        limitedArticles.push(article)
-      }
+      articlesBySource[source].push(article)
+    }
+
+    // Apply smart selection to each source, then limit per source
+    const limitedArticles: NewsArticle[] = []
+    for (const source in articlesBySource) {
+      const sourceArticles = articlesBySource[source]
+      // Use smart selector to get best mix for this source
+      const selected = selectArticles(sourceArticles, maxPerSource * 3)
+      // Then limit to maxPerSource
+      limitedArticles.push(...selected.slice(0, maxPerSource))
     }
 
     // Sort by time (newest first)

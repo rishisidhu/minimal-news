@@ -11,6 +11,10 @@ import { scrapeMessari } from '@/lib/scrapers/messari'
 
 export async function POST() {
   try {
+    // Generate batch ID for this scrape session
+    const now = new Date().toISOString()
+    const batchId = `batch-${now}`
+
     // Delete articles older than 6 hours
     const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
     const { error: deleteError, count: deletedCount } = await supabaseAdmin
@@ -58,12 +62,16 @@ export async function POST() {
 
     // Upsert articles into Supabase (insert new, update existing based on article_url)
     let upsertedCount = 0
-    const now = new Date().toISOString()
 
     for (const article of allArticles) {
       const { error } = await supabaseAdmin
         .from('news_articles')
-        .upsert({ ...article, updated_at: now }, { onConflict: 'article_url' })
+        .upsert({
+          ...article,
+          updated_at: now,
+          scrape_batch_id: batchId,
+          scrape_batch_time: now
+        }, { onConflict: 'article_url' })
         .select()
 
       if (error) {

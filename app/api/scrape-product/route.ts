@@ -15,6 +15,10 @@ export async function POST() {
   const startTime = Date.now()
 
   try {
+    // Generate batch ID for this scrape session
+    const now = new Date().toISOString()
+    const batchId = `batch-${now}`
+
     // Delete old articles (older than 6 hours) for product sources only
     const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
     console.log(`🗑️  Deleting articles older than ${sixHoursAgo}...`)
@@ -56,11 +60,12 @@ export async function POST() {
 
     console.log(`💾 Upserting ${allArticles.length} articles to database...`)
 
-    // Add updated_at timestamp to all articles
-    const now = new Date().toISOString()
+    // Add updated_at and batch tracking to all articles
     const articlesWithTimestamp = allArticles.map(article => ({
       ...article,
-      updated_at: now
+      updated_at: now,
+      scrape_batch_id: batchId,
+      scrape_batch_time: now
     }))
 
     // Batch upsert instead of sequential (faster and avoids timeout)
