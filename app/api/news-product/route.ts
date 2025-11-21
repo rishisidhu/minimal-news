@@ -19,8 +19,8 @@ export async function GET(request: Request) {
       .from('news_articles')
       .select('*')
       .in('source', PRODUCT_SOURCES)
-      .gte('created_at', sixHoursAgo)
-      .order('created_at', { ascending: false })
+      .gte('updated_at', sixHoursAgo)
+      .order('updated_at', { ascending: false })
 
     if (error) {
       console.error('Database error:', error)
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     // Flatten and sort by time
     const limitedData = Object.values(groupedBySource)
       .flat()
-      .sort((a, b) => new Date(b.created_at || b.published_at).getTime() - new Date(a.created_at || a.published_at).getTime())
+      .sort((a, b) => new Date(b.updated_at || b.published_at).getTime() - new Date(a.updated_at || a.published_at).getTime())
 
     return NextResponse.json({
       success: true,
