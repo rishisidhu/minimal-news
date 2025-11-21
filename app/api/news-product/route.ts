@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin, NewsArticle } from '@/lib/supabase'
 
 const PRODUCT_SOURCES = [
   'Hacker News',
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     }
 
     // Group by source and limit to maxPerSource per source
-    const groupedBySource: { [key: string]: typeof data } = {}
+    const groupedBySource: { [key: string]: NewsArticle[] } = {}
     for (const article of data || []) {
       if (!groupedBySource[article.source]) {
         groupedBySource[article.source] = []
