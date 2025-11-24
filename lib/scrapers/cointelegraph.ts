@@ -1,9 +1,7 @@
-import Parser from 'rss-parser'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import { NewsArticle } from '../supabase'
-
-const parser = new Parser()
+import { fetchRSSWithCache } from '../rss-cache'
 
 interface ArticleMetadata {
   imageUrl: string | null
@@ -54,7 +52,7 @@ async function fetchArticleMetadata(url: string): Promise<ArticleMetadata> {
 
 export async function scrapeCointelegraph(): Promise<NewsArticle[]> {
   try {
-    const feed = await parser.parseURL('https://cointelegraph.com/rss')
+    const feed = await fetchRSSWithCache('https://cointelegraph.com/rss')
     const articles: NewsArticle[] = []
 
     for (const item of feed.items.slice(0, 15)) {

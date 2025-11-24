@@ -1,13 +1,11 @@
-import Parser from 'rss-parser'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import { NewsArticle } from '../supabase'
-
-const parser = new Parser()
+import { fetchRSSWithCache } from '../rss-cache'
 
 export async function scrapeVentureBeatAI(): Promise<NewsArticle[]> {
   try {
-    const feed = await parser.parseURL('https://venturebeat.com/category/ai/feed/')
+    const feed = await fetchRSSWithCache('https://venturebeat.com/category/ai/feed/')
     const articles: NewsArticle[] = []
 
     for (const item of feed.items.slice(0, 15)) {
