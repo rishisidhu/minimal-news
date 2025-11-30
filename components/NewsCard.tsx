@@ -134,7 +134,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             <span className={`w-1 h-3 rounded-full ${getDotColor(article.source)}`} />
             <span>{article.source}</span>
           </span>
-          <span>{formatDistanceToNow(new Date(article.updated_at || article.published_at), { addSuffix: true })}</span>
+          <span>{formatDistanceToNow(new Date(article.created_at || article.published_at), { addSuffix: true })}</span>
         </div>
       </div>
     </article>

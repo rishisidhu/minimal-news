@@ -15,16 +15,16 @@ export function selectArticles(
 
   // Find the most recent batch
   const latestBatchTime = articles.reduce((latest, article) => {
-    const batchTime = article.scrape_batch_time || article.updated_at
+    const batchTime = article.scrape_batch_time
     return batchTime && (!latest || batchTime > latest) ? batchTime : latest
   }, '')
 
   // Split articles into fresh (latest batch) and older
   const freshArticles = articles.filter(
-    a => (a.scrape_batch_time || a.updated_at) === latestBatchTime
+    a => a.scrape_batch_time === latestBatchTime
   )
   const olderArticles = articles.filter(
-    a => (a.scrape_batch_time || a.updated_at) !== latestBatchTime
+    a => a.scrape_batch_time !== latestBatchTime
   )
 
   // Calculate how many from each group
@@ -61,11 +61,11 @@ function balanceAcrossTime(
   // Create 6 time buckets (one per hour)
   const buckets: NewsArticle[][] = Array.from({ length: 6 }, () => [])
 
-  // Distribute articles into buckets based on their timestamp
+  // Distribute articles into buckets based on their created_at timestamp
   articles.forEach(article => {
-    const timestamp = new Date(article.updated_at || article.published_at).getTime()
-    const hoursSincePublished = Math.floor((now - timestamp) / oneHour)
-    const bucketIndex = Math.min(hoursSincePublished, 5) // Cap at 5 for 6th hour
+    const timestamp = new Date(article.created_at || article.published_at).getTime()
+    const hoursSinceCreated = Math.floor((now - timestamp) / oneHour)
+    const bucketIndex = Math.min(hoursSinceCreated, 5) // Cap at 5 for 6th hour
     buckets[bucketIndex].push(article)
   })
 

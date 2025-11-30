@@ -13,8 +13,8 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from('news_articles')
       .select('*')
-      .gte('updated_at', sixHoursAgo)
-      .order('updated_at', { ascending: false })
+      .gte('created_at', sixHoursAgo)
+      .order('created_at', { ascending: false })
 
     if (error) {
       console.error('Error fetching news:', error)
@@ -46,8 +46,8 @@ export async function GET(request: Request) {
 
     // Sort by time (newest first)
     limitedArticles.sort((a, b) =>
-      new Date(b.updated_at || b.published_at).getTime() -
-      new Date(a.updated_at || a.published_at).getTime()
+      new Date(b.created_at || b.published_at).getTime() -
+      new Date(a.created_at || a.published_at).getTime()
     )
 
     return NextResponse.json({

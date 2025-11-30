@@ -49,30 +49,41 @@ export async function POST() {
       ...huggingfaceArticles
     ]
 
-    // Upsert articles into Supabase
-    let upsertedCount = 0
+    // Fetch existing article URLs to avoid duplicates
+    const articleUrls = allArticles.map(a => a.article_url)
+    const { data: existingArticles } = await supabaseAdmin
+      .from('news_articles')
+      .select('article_url')
+      .in('article_url', articleUrls)
 
-    for (const article of allArticles) {
+    const existingUrls = new Set(existingArticles?.map(a => a.article_url) || [])
+
+    // Filter to only new articles
+    const newArticles = allArticles.filter(a => !existingUrls.has(a.article_url))
+
+    // Insert only new articles
+    let insertedCount = 0
+
+    for (const article of newArticles) {
       const { error } = await supabaseAdmin
         .from('news_articles')
-        .upsert({
+        .insert({
           ...article,
-          updated_at: now,
           scrape_batch_id: batchId,
           scrape_batch_time: now
-        }, { onConflict: 'article_url' })
+        })
         .select()
 
       if (error) {
-        console.error('Error upserting AI article:', error)
+        console.error('Error inserting AI article:', error)
       } else {
-        upsertedCount++
+        insertedCount++
       }
     }
 
     return NextResponse.json({
       success: true,
-      message: `Scraped ${allArticles.length} AI articles. Upserted: ${upsertedCount}`,
+      message: `Scraped ${allArticles.length} AI articles. Inserted: ${insertedCount} new articles`,
       stats: {
         techcrunch: techcrunchArticles.length,
         wired: wiredArticles.length,

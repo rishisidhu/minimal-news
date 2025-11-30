@@ -58,29 +58,42 @@ export async function POST() {
       ...productSchoolArticles
     ]
 
-    console.log(`💾 Upserting ${allArticles.length} articles to database...`)
+    console.log(`💾 Inserting ${allArticles.length} articles to database...`)
 
-    // Add updated_at and batch tracking to all articles
-    const articlesWithTimestamp = allArticles.map(article => ({
+    // Fetch existing article URLs to avoid duplicates
+    const articleUrls = allArticles.map(a => a.article_url)
+    const { data: existingArticles } = await supabaseAdmin
+      .from('news_articles')
+      .select('article_url')
+      .in('article_url', articleUrls)
+
+    const existingUrls = new Set(existingArticles?.map(a => a.article_url) || [])
+
+    // Filter to only new articles
+    const newArticles = allArticles.filter(a => !existingUrls.has(a.article_url))
+
+    console.log(`📊 Found ${existingUrls.size} existing articles, inserting ${newArticles.length} new ones`)
+
+    // Add batch tracking to new articles only
+    const articlesWithBatch = newArticles.map(article => ({
       ...article,
-      updated_at: now,
       scrape_batch_id: batchId,
       scrape_batch_time: now
     }))
 
-    // Batch upsert instead of sequential (faster and avoids timeout)
-    const { error: upsertError, count } = await supabaseAdmin
+    // Batch insert instead of upsert (faster and avoids timeout)
+    const { error: insertError, count } = await supabaseAdmin
       .from('news_articles')
-      .upsert(articlesWithTimestamp, { onConflict: 'article_url', count: 'exact' })
+      .insert(articlesWithBatch, { count: 'exact' })
 
-    if (upsertError) {
-      console.error('❌ Error upserting articles:', upsertError)
-      console.error('Error details:', JSON.stringify(upsertError, null, 2))
+    if (insertError) {
+      console.error('❌ Error inserting articles:', insertError)
+      console.error('Error details:', JSON.stringify(insertError, null, 2))
       return NextResponse.json(
         {
           success: false,
           error: 'Database insert failed',
-          details: upsertError.message
+          details: insertError.message
         },
         { status: 500 }
       )
@@ -88,8 +101,8 @@ export async function POST() {
 
     const duration = Date.now() - startTime
     console.log(`✅ Product scrape complete in ${duration}ms`)
-    console.log(`   - Total articles: ${allArticles.length}`)
-    console.log(`   - Upserted: ${count || allArticles.length}`)
+    console.log(`   - Total articles scraped: ${allArticles.length}`)
+    console.log(`   - New articles inserted: ${count || newArticles.length}`)
 
     return NextResponse.json({
       success: true,
